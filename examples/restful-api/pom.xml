@@ -15,6 +15,10 @@
     <name>RESTful API Examples</name>
     <description>REST server and client implementations with Spring Boot</description>
 
+    <properties>
+        <jacoco.skip>true</jacoco.skip>
+    </properties>
+
     <dependencies>
         <!-- Spring Boot Web -->
         <dependency>

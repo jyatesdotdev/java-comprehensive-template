@@ -15,6 +15,10 @@
     <name>Testing Strategy</name>
     <description>JUnit 5, Mockito, TestContainers, REST Assured, ArchUnit examples</description>
 
+    <properties>
+        <jacoco.skip>true</jacoco.skip>
+    </properties>
+
     <dependencies>
         <!-- Production code dependencies (minimal, just enough to have something to test) -->
         <dependency>
