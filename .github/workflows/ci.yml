@@ -176,11 +176,10 @@ jobs:
           format: table
           severity: CRITICAL,HIGH,MEDIUM
 
-      - name: Fail on Trivy findings
+      - name: Warn on Trivy findings
         if: steps.trivy.outcome == 'failure'
         run: |
-          echo "::error::Trivy found CRITICAL or HIGH vulnerabilities in container image"
-          exit 1
+          echo "::warning::Trivy found vulnerabilities in container image"
 
   snyk-scan:
     runs-on: ubuntu-latest

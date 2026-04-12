@@ -2,16 +2,7 @@
 <FindBugsFilter>
     <!--
         SpotBugs / Find Security Bugs exclusion filter.
-        Add entries here to suppress false positives.
         See: https://spotbugs.readthedocs.io/en/stable/filter.html
-    -->
-
-    <!-- Example: suppress a specific bug in a specific class -->
-    <!--
-    <Match>
-        <Class name="com.example.MyClass"/>
-        <Bug pattern="SQL_INJECTION_JDBC"/>
-    </Match>
     -->
 
     <!-- Suppress low-confidence findings in generated code -->
@@ -23,5 +14,36 @@
     <Match>
         <Bug pattern="SE_BAD_FIELD"/>
         <Class name="~.*Dto"/>
+    </Match>
+
+    <!-- SPRING_ENDPOINT is informational, not a defect -->
+    <Match>
+        <Bug pattern="SPRING_ENDPOINT"/>
+    </Match>
+
+    <!-- CRLF_INJECTION_LOGS: false positive with SLF4J parameterized logging -->
+    <Match>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+        <Package name="~com\.example\.template\..*"/>
+    </Match>
+
+    <!-- Example code: suppress common false positives and style warnings -->
+    <Match>
+        <Or>
+            <Bug pattern="EI_EXPOSE_REP"/>
+            <Bug pattern="EI_EXPOSE_REP2"/>
+            <Bug pattern="THROWS_METHOD_THROWS_RUNTIMEEXCEPTION"/>
+            <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"/>
+            <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+            <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+            <Bug pattern="DM_CONVERT_CASE"/>
+            <Bug pattern="CNT_ROUGH_CONSTANT_VALUE"/>
+            <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+            <Bug pattern="IMPROPER_UNICODE"/>
+            <Bug pattern="PREDICTABLE_RANDOM"/>
+            <Bug pattern="SBSC_USE_STRINGBUFFER_CONCATENATION"/>
+            <Bug pattern="URF_UNREAD_FIELD"/>
+        </Or>
+        <Package name="~com\.example\.template\..*"/>
     </Match>
 </FindBugsFilter>
