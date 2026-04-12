@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Implements {@link AutoCloseable} — use with try-with-resources.
  */
+@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes") // Example code uses RuntimeException for simplicity
 public class ProductJaxRsClient implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(ProductJaxRsClient.class);
@@ -60,7 +61,7 @@ public class ProductJaxRsClient implements AutoCloseable {
         return client.target(baseUrl)
                 .path("api/v1/products")
                 .request(MediaType.APPLICATION_JSON)
-                .get(new GenericType<>() {});
+                .get(new GenericType<>() { });
     }
 
     /**

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 public class InMemoryProductService implements ProductService {
 
     private static final Logger log = LoggerFactory.getLogger(InMemoryProductService.class);
+    @SuppressWarnings("PMD.LooseCoupling") // Map is already the interface; ConcurrentHashMap is only on RHS
     private final Map<UUID, Product> store = new ConcurrentHashMap<>();
 
     @Override

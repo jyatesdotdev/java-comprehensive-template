@@ -16,7 +16,8 @@ import java.nio.ByteOrder;
  *
  * <p>Risks: manual lifecycle management, potential leaks, no bounds-check safety net.
  */
-public class OffHeapMemoryExample {
+@SuppressWarnings("PMD.SystemPrintln") // Example code
+public final class OffHeapMemoryExample {
 
     private static final Cleaner CLEANER = Cleaner.create();
 
@@ -50,6 +51,7 @@ public class OffHeapMemoryExample {
      * A simple off-heap array of doubles with deterministic cleanup via {@link Cleaner}.
      * Demonstrates the recommended Java 9+ pattern for releasing native resources.
      */
+    @SuppressWarnings("PMD.UnusedLocalVariable") // ref captured by Cleaner lambda
     public static class OffHeapDoubleArray implements AutoCloseable {
 
         private final ByteBuffer buffer;

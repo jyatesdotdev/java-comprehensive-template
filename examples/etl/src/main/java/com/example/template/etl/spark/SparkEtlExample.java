@@ -30,7 +30,7 @@ import java.util.List;
  * // Production: spark-submit --master yarn --class com.example.template.etl.spark.SparkEtlExample app.jar
  * </pre>
  */
-public class SparkEtlExample {
+public final class SparkEtlExample {
 
     private SparkEtlExample() {}
 

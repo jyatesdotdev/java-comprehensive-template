@@ -7,7 +7,7 @@ import com.example.template.restfulapi.dto.ProductResponse;
 /** Maps between domain entities and DTOs. */
 public final class ProductMapper {
 
-    private ProductMapper() {}
+    private ProductMapper() { }
 
     /**
      * Converts a domain entity to a response DTO.

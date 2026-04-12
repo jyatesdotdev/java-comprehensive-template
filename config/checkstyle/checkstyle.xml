@@ -56,13 +56,18 @@
         </module>
         <module name="ParameterName"/>
         <module name="LocalVariableName"/>
-        <module name="ConstantName"/>
+        <module name="ConstantName">
+            <!-- Allow SLF4J logger convention: private static final Logger log = ... -->
+            <property name="format" value="^([A-Z][A-Z0-9]*(_[A-Z0-9]+)*|log(ger)?)$"/>
+        </module>
         <module name="PackageName">
             <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
         </module>
 
         <!-- ===== Imports ===== -->
-        <module name="AvoidStarImport"/>
+        <module name="AvoidStarImport">
+            <property name="allowStaticMemberImports" value="true"/>
+        </module>
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
         <module name="IllegalImport">
@@ -110,7 +115,13 @@
         <module name="RedundantModifier"/>
 
         <!-- ===== Whitespace / Formatting ===== -->
-        <module name="WhitespaceAround"/>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLambdas" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+        </module>
         <module name="GenericWhitespace"/>
         <module name="LeftCurly"/>
         <module name="RightCurly"/>

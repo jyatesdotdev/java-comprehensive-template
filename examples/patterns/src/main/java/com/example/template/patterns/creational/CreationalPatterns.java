@@ -16,6 +16,7 @@ import java.util.function.Supplier;
  *   <li><b>Abstract Factory</b> — functional factory registry</li>
  * </ul>
  */
+@SuppressWarnings("PMD.MissingStaticMethodInNonInstantiatableClass") // Example code
 public final class CreationalPatterns {
     private CreationalPatterns() {}
 
@@ -36,7 +37,9 @@ public final class CreationalPatterns {
          *
          * @return the first builder step requiring an HTTP method
          */
-        public static MethodStep builder() { return method -> url -> new Builder(method, url); }
+        public static MethodStep builder() {
+            return method -> url -> new Builder(method, url);
+        }
 
         /** Step requiring the HTTP method. */
         public interface MethodStep {
@@ -79,7 +82,10 @@ public final class CreationalPatterns {
              * @param value header value
              * @return this builder
              */
-            public Builder header(String key, String value) { headers.put(key, value); return this; }
+            public Builder header(String key, String value) {
+                headers.put(key, value);
+                return this;
+            }
 
             /**
              * Sets the request body.
@@ -87,14 +93,19 @@ public final class CreationalPatterns {
              * @param body request body
              * @return this builder
              */
-            public Builder body(String body) { this.body = body; return this; }
+            public Builder body(String body) {
+                this.body = body;
+                return this;
+            }
 
             /**
              * Builds an immutable {@link HttpRequest}.
              *
              * @return the constructed request
              */
-            public HttpRequest build() { return new HttpRequest(method, url, Map.copyOf(headers), body); }
+            public HttpRequest build() {
+                return new HttpRequest(method, url, Map.copyOf(headers), body);
+            }
         }
     }
 
@@ -117,7 +128,10 @@ public final class CreationalPatterns {
          * @param radius circle radius
          */
         record Circle(double radius) implements Shape {
-            public double area() { return Math.PI * radius * radius; }
+            @Override
+            public double area() {
+                return Math.PI * radius * radius;
+            }
         }
 
         /**
@@ -127,7 +141,10 @@ public final class CreationalPatterns {
          * @param height rectangle height
          */
         record Rectangle(double width, double height) implements Shape {
-            public double area() { return width * height; }
+            @Override
+            public double area() {
+                return width * height;
+            }
         }
 
         /**
@@ -137,7 +154,10 @@ public final class CreationalPatterns {
          * @param height triangle height
          */
         record Triangle(double base, double height) implements Shape {
-            public double area() { return 0.5 * base * height; }
+            @Override
+            public double area() {
+                return 0.5 * base * height;
+            }
         }
 
         /**
@@ -189,7 +209,9 @@ public final class CreationalPatterns {
          * @param key   property key
          * @param value property value
          */
-        public void set(String key, String value) { properties.put(key, value); }
+        public void set(String key, String value) {
+            properties.put(key, value);
+        }
 
         /**
          * Gets a configuration property.
@@ -197,7 +219,9 @@ public final class CreationalPatterns {
          * @param key property key
          * @return the value, or {@code null} if absent
          */
-        public String get(String key) { return properties.get(key); }
+        public String get(String key) {
+            return properties.get(key);
+        }
 
         /**
          * Gets a configuration property with a default fallback.
@@ -206,7 +230,9 @@ public final class CreationalPatterns {
          * @param def default value if key is absent
          * @return the value, or {@code def} if absent
          */
-        public String getOrDefault(String key, String def) { return properties.getOrDefault(key, def); }
+        public String getOrDefault(String key, String def) {
+            return properties.getOrDefault(key, def);
+        }
     }
 
     // ── Prototype: record-based with copy-and-modify via wither methods ──
@@ -272,14 +298,24 @@ public final class CreationalPatterns {
      *
      * @param label button label text
      */
-    public record Button(String label) implements Widget { public String render() { return "<button>" + label + "</button>"; } }
+    public record Button(String label) implements Widget {
+        @Override
+        public String render() {
+            return "<button>" + label + "</button>";
+        }
+    }
 
     /**
      * A text input widget.
      *
      * @param placeholder placeholder text
      */
-    public record TextInput(String placeholder) implements Widget { public String render() { return "<input placeholder=\"" + placeholder + "\">"; } }
+    public record TextInput(String placeholder) implements Widget {
+        @Override
+        public String render() {
+            return "<input placeholder=\"" + placeholder + "\">";
+        }
+    }
 
     /** Functional registry-based Abstract Factory for {@link Widget} instances. */
     public static final class WidgetFactory {
@@ -291,7 +327,9 @@ public final class CreationalPatterns {
          * @param name    widget type name
          * @param creator supplier that creates the widget
          */
-        public void register(String name, Supplier<Widget> creator) { registry.put(name, creator); }
+        public void register(String name, Supplier<Widget> creator) {
+            registry.put(name, creator);
+        }
 
         /**
          * Creates a widget by name.
@@ -302,7 +340,9 @@ public final class CreationalPatterns {
          */
         public Widget create(String name) {
             var creator = registry.get(name);
-            if (creator == null) throw new IllegalArgumentException("Unknown widget: " + name);
+            if (creator == null) {
+                throw new IllegalArgumentException("Unknown widget: " + name);
+            }
             return creator.get();
         }
     }

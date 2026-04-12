@@ -2,7 +2,10 @@ package com.example.template.testing.integration;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
@@ -22,6 +25,7 @@ import static org.hamcrest.Matchers.*;
  */
 @Testcontainers
 @DisplayName("REST Assured API Testing")
+@SuppressWarnings({"PMD.JUnitTestsShouldIncludeAssert", "PMD.AvoidDuplicateLiterals"}) // REST-assured uses fluent assertions
 class RestAssuredIT {
 
     @Container

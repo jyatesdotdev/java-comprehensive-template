@@ -28,11 +28,15 @@
         <exclude name="JUnitTestContainsTooManyAsserts"/>
         <exclude name="JUnitAssertionsShouldIncludeMessage"/>
         <exclude name="AbstractClassWithoutAbstractMethod"/>
+        <!-- PMD 7.0 false positives: flags Collection, Map as implementation types -->
+        <exclude name="LooseCoupling"/>
     </rule>
 
     <!-- ==================== MULTITHREADING ==================== -->
     <rule ref="category/java/multithreading.xml">
         <exclude name="UseConcurrentHashMap"/>
+        <!-- Not a J2EE webapp — threading is intentional, especially in HPC examples -->
+        <exclude name="DoNotUseThreads"/>
     </rule>
 
     <!-- ==================== DESIGN ==================== -->

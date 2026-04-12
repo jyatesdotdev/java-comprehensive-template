@@ -20,6 +20,7 @@ import java.util.function.Predicate;
  *   <li><b>Iterator</b> — custom Iterable over a tree</li>
  * </ul>
  */
+@SuppressWarnings({"PMD.MissingStaticMethodInNonInstantiatableClass", "PMD.ArrayIsStoredDirectly", "PMD.UseUtilityClass"}) // Example code
 public final class BehavioralPatterns {
     private BehavioralPatterns() {}
 
@@ -70,21 +71,27 @@ public final class BehavioralPatterns {
          *
          * @param listener event consumer
          */
-        public void subscribe(Consumer<E> listener) { listeners.add(listener); }
+        public void subscribe(Consumer<E> listener) {
+            listeners.add(listener);
+        }
 
         /**
          * Unsubscribes a previously registered listener.
          *
          * @param listener event consumer to remove
          */
-        public void unsubscribe(Consumer<E> listener) { listeners.remove(listener); }
+        public void unsubscribe(Consumer<E> listener) {
+            listeners.remove(listener);
+        }
 
         /**
          * Publishes an event to all subscribers.
          *
          * @param event the event to broadcast
          */
-        public void publish(E event) { listeners.forEach(l -> l.accept(event)); }
+        public void publish(E event) {
+            listeners.forEach(l -> l.accept(event));
+        }
     }
 
     /** Sealed hierarchy of order domain events. */
@@ -147,8 +154,14 @@ public final class BehavioralPatterns {
          * @param item item to add
          */
         record AddItem<T>(List<T> list, T item) implements Command<Boolean> {
-            public Boolean execute() { return list.add(item); }
-            public void undo() { list.remove(item); }
+            @Override
+            public Boolean execute() {
+                return list.add(item);
+            }
+            @Override
+            public void undo() {
+                list.remove(item);
+            }
         }
 
         /**
@@ -159,8 +172,14 @@ public final class BehavioralPatterns {
          * @param item item to remove
          */
         record RemoveItem<T>(List<T> list, T item) implements Command<Boolean> {
-            public Boolean execute() { return list.remove(item); }
-            public void undo() { list.add(item); }
+            @Override
+            public Boolean execute() {
+                return list.remove(item);
+            }
+            @Override
+            public void undo() {
+                list.add(item);
+            }
         }
     }
 
@@ -183,7 +202,9 @@ public final class BehavioralPatterns {
 
         /** Undoes the most recent command, if any. */
         public void undo() {
-            if (!history.isEmpty()) history.pop().undo();
+            if (!history.isEmpty()) {
+                history.pop().undo();
+            }
         }
 
         /**
@@ -191,7 +212,9 @@ public final class BehavioralPatterns {
          *
          * @return history size
          */
-        public int size() { return history.size(); }
+        public int size() {
+            return history.size();
+        }
     }
 
     // ── Template Method: data export framework ──
@@ -211,7 +234,9 @@ public final class BehavioralPatterns {
         public final String export(List<T> items) {
             var sb = new StringBuilder();
             sb.append(header());
-            for (T item : items) sb.append(formatItem(item));
+            for (T item : items) {
+                sb.append(formatItem(item));
+            }
             sb.append(footer());
             return sb.toString();
         }
@@ -236,7 +261,9 @@ public final class BehavioralPatterns {
          *
          * @return footer content
          */
-        protected String footer() { return ""; } // hook — optional override
+        protected String footer() {
+            return ""; // hook — optional override
+        }
     }
 
     /**
@@ -250,10 +277,16 @@ public final class BehavioralPatterns {
          *
          * @param columns column header names
          */
-        public CsvExporter(String... columns) { this.columns = columns; }
+        public CsvExporter(String... columns) {
+            this.columns = columns;
+        }
 
-        @Override protected String header() { return String.join(",", columns) + "\n"; }
-        @Override protected String formatItem(String[] row) { return String.join(",", row) + "\n"; }
+        @Override protected String header() {
+     return String.join(",", columns) + "\n";
+ }
+        @Override protected String formatItem(String[] row) {
+     return String.join(",", row) + "\n";
+ }
     }
 
     // ── Chain of Responsibility: composable validation pipeline ──

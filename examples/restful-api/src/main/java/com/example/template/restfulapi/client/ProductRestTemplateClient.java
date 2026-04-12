@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
  *
  * <p>Both are synchronous and blocking. For non-blocking I/O, see {@link ProductWebClientExample}.
  */
+@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "PMD.AvoidDuplicateLiterals"}) // Example code
 public class ProductRestTemplateClient {
 
     private static final Logger log = LoggerFactory.getLogger(ProductRestTemplateClient.class);
@@ -51,7 +52,7 @@ public class ProductRestTemplateClient {
      */
     public List<ProductResponse> listWithRestTemplate() {
         var request = RequestEntity.get(baseUrl + "/api/v1/products").accept(MediaType.APPLICATION_JSON).build();
-        var response = restTemplate.exchange(request, new ParameterizedTypeReference<List<ProductResponse>>() {});
+        var response = restTemplate.exchange(request, new ParameterizedTypeReference<List<ProductResponse>>() { });
         log.info("Listed {} products (RestTemplate)", response.getBody().size());
         return response.getBody();
     }
@@ -108,7 +109,7 @@ public class ProductRestTemplateClient {
         return restClient.get()
                 .uri("/api/v1/products")
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .body(new ParameterizedTypeReference<>() { });
     }
 
     /**

@@ -33,4 +33,4 @@ public record ProductResponse(
         Instant createdAt,
 
         @Schema(description = "Last update timestamp")
-        Instant updatedAt) {}
+        Instant updatedAt) { }

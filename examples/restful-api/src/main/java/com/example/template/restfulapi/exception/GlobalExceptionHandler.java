@@ -57,6 +57,7 @@ public class GlobalExceptionHandler {
      * @return 500 error response
      */
     @ExceptionHandler(Exception.class)
+    @SuppressWarnings("PMD.InvalidLogMessageFormat") // ex is a Throwable arg, not a format arg
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
         log.error("Unhandled exception", ex);
         var body = new ErrorResponse(500, "Internal Server Error", "An unexpected error occurred");

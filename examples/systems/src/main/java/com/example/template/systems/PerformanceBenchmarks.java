@@ -1,6 +1,14 @@
 package com.example.template.systems;
 
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
@@ -35,6 +43,7 @@ import java.util.stream.IntStream;
 @Warmup(iterations = 3, time = 1)
 @Measurement(iterations = 5, time = 1)
 @Fork(1)
+@SuppressWarnings({"PMD.UseStringBufferForStringAppends", "PMD.SignatureDeclareThrowsException"}) // Benchmark code
 public class PerformanceBenchmarks {
 
     private static final int SIZE = 10_000;
@@ -109,9 +118,13 @@ public class PerformanceBenchmarks {
     @Benchmark
     public int arrayListIteration() {
         List<Integer> list = new ArrayList<>(SIZE);
-        for (int i = 0; i < SIZE; i++) list.add(i);
+        for (int i = 0; i < SIZE; i++) {
+            list.add(i);
+        }
         int sum = 0;
-        for (int val : list) sum += val;
+        for (int val : list) {
+            sum += val;
+        }
         return sum;
     }
 
@@ -123,9 +136,13 @@ public class PerformanceBenchmarks {
     @Benchmark
     public int linkedListIteration() {
         List<Integer> list = new LinkedList<>();
-        for (int i = 0; i < SIZE; i++) list.add(i);
+        for (int i = 0; i < SIZE; i++) {
+            list.add(i);
+        }
         int sum = 0;
-        for (int val : list) sum += val;
+        for (int val : list) {
+            sum += val;
+        }
         return sum;
     }
 
@@ -149,7 +166,9 @@ public class PerformanceBenchmarks {
     @Benchmark
     public long forLoopSum() {
         long sum = 0;
-        for (int i = 0; i < SIZE; i++) sum += i;
+        for (int i = 0; i < SIZE; i++) {
+            sum += i;
+        }
         return sum;
     }
 

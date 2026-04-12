@@ -1,10 +1,14 @@
 package com.example.template.hpc;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.StampedLock;
 
 /**
@@ -20,9 +24,10 @@ import java.util.concurrent.locks.StampedLock;
  *   <li>Lock strategies: ReentrantReadWriteLock, StampedLock</li>
  * </ul>
  */
+@SuppressWarnings("PMD.SignatureDeclareThrowsException") // Example code
 public final class ConcurrentCollectionsExamples {
 
-    private ConcurrentCollectionsExamples() {}
+    private ConcurrentCollectionsExamples() { }
 
     // ── ConcurrentHashMap ──────────────────────────────────────────────
 
@@ -88,7 +93,9 @@ public final class ConcurrentCollectionsExamples {
         var results = new CopyOnWriteArrayList<String>();
         while (true) {
             String item = queue.take();
-            if (POISON_PILL.equals(item)) break;
+            if (POISON_PILL.equals(item)) {
+                break;
+            }
             results.add(item);
         }
         return List.copyOf(results);
@@ -166,7 +173,8 @@ public final class ConcurrentCollectionsExamples {
      * only if the data was modified during the read.
      */
     public static class Point {
-        private double x, y;
+        private double x;
+        private double y;
         private final StampedLock lock = new StampedLock();
 
         /**
@@ -192,7 +200,8 @@ public final class ConcurrentCollectionsExamples {
          */
         public double distanceFromOrigin() {
             long stamp = lock.tryOptimisticRead();
-            double currentX = x, currentY = y;
+            double currentX = x;
+            double currentY = y;
             if (!lock.validate(stamp)) {
                 // Fallback to read lock
                 stamp = lock.readLock();

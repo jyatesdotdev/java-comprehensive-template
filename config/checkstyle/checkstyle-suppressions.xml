@@ -15,9 +15,20 @@
     <suppress files=".*Test\.java" checks="MethodLength"/>
     <suppress files=".*Test\.java" checks="CyclomaticComplexity"/>
     <suppress files=".*Test\.java" checks="MissingJavadocType"/>
+    <suppress files=".*Test\.java" checks="MethodName"/>
     <suppress files=".*IT\.java" checks="MethodLength"/>
     <suppress files=".*IT\.java" checks="CyclomaticComplexity"/>
     <suppress files=".*IT\.java" checks="MissingJavadocType"/>
+    <suppress files=".*Test\.java" checks="ConstantName"/>
+    <suppress files=".*IT\.java" checks="ConstantName"/>
+
+    <!-- Systems/profiling examples intentionally use System.out for benchmarks -->
+    <suppress files=".*systems[/\\].*\.java" checks="RegexpSingleline" message="System\.out"/>
+    <suppress files=".*systems[/\\].*\.java" checks="RegexpSingleline" message="System\.err"/>
+
+    <!-- Simulation examples use System.out for output -->
+    <suppress files=".*simulation[/\\].*\.java" checks="RegexpSingleline" message="System\.out"/>
+    <suppress files=".*simulation[/\\].*\.java" checks="RegexpSingleline" message="System\.err"/>
 
     <!-- Allow System.out in main methods and CLI entry points -->
     <!-- <suppress files="Main\.java" checks="RegexpSingleline" message="System\.out"/> -->

@@ -5,8 +5,6 @@ import com.example.template.restfulapi.dto.ProductResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -30,8 +28,6 @@ import reactor.core.publisher.Mono;
  * </ul>
  */
 public class ProductWebClientExample {
-
-    private static final Logger log = LoggerFactory.getLogger(ProductWebClientExample.class);
 
     private final WebClient webClient;
 

@@ -25,4 +25,4 @@ public record ProductRequest(
         String description,
 
         @Schema(description = "Unit price", example = "29.99")
-        @NotNull(message = "Price is required") @Positive(message = "Price must be positive") BigDecimal price) {}
+        @NotNull(message = "Price is required") @Positive(message = "Price must be positive") BigDecimal price) { }

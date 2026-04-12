@@ -15,6 +15,7 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 @AnalyzeClasses(
         packages = "com.example.template.testing",
         importOptions = ImportOption.DoNotIncludeTests.class)
+@SuppressWarnings("PMD.TestClassWithoutTestCases") // ArchUnit uses @ArchTest fields, not @Test methods
 class ArchitectureRulesTest {
 
     @ArchTest

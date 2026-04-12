@@ -28,6 +28,7 @@ import java.nio.file.Path;
  *   (JNIEnv *, jobject, jstring);
  * }</pre>
  */
+@SuppressWarnings("PMD.SystemPrintln") // Example code
 public class JniExample {
 
     // Load native library from java.library.path

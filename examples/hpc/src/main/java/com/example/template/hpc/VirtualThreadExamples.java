@@ -1,7 +1,10 @@
 package com.example.template.hpc;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.IntStream;
 
 /**
@@ -26,6 +29,7 @@ import java.util.stream.IntStream;
  *   <li>Tasks holding native resources or using {@code synchronized} heavily (pinning)</li>
  * </ul>
  */
+@SuppressWarnings({"PMD.SignatureDeclareThrowsException", "PMD.UnusedPrivateMethod"}) // Example code
 public final class VirtualThreadExamples {
 
     private VirtualThreadExamples() {}
@@ -119,13 +123,17 @@ public final class VirtualThreadExamples {
     }
 
     private static void simulateIo() {
-        try { Thread.sleep(10); } catch (InterruptedException e) {
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
     private static <T> T getUnchecked(Future<T> future) {
-        try { return future.get(); } catch (Exception e) {
+        try {
+            return future.get();
+        } catch (Exception e) {
             throw new CompletionException(e);
         }
     }

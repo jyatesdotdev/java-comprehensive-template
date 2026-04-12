@@ -18,6 +18,7 @@ import java.util.function.UnaryOperator;
  *   <li><b>Facade</b> — simplified API over complex subsystem</li>
  * </ul>
  */
+@SuppressWarnings({"PMD.UseUtilityClass", "PMD.SwitchDensity"}) // Example code
 public final class StructuralPatterns {
     private StructuralPatterns() {}
 
@@ -89,21 +90,29 @@ public final class StructuralPatterns {
     /** Library of reusable {@link TextProcessor} decorators. */
     public static final class Decorators {
         /** @return a processor that trims whitespace */
-        public static TextProcessor trimming()    { return String::trim; }
+        public static TextProcessor trimming()    {
+            return String::trim;
+        }
         /** @return a processor that converts to upper case */
-        public static TextProcessor upperCase()   { return String::toUpperCase; }
+        public static TextProcessor upperCase()   {
+            return String::toUpperCase;
+        }
 
         /**
          * @param p prefix string
          * @return a processor that prepends the prefix
          */
-        public static TextProcessor prefix(String p) { return s -> p + s; }
+        public static TextProcessor prefix(String p) {
+            return s -> p + s;
+        }
 
         /**
          * @param s suffix string
          * @return a processor that appends the suffix
          */
-        public static TextProcessor suffix(String s) { return input -> input + s; }
+        public static TextProcessor suffix(String s) {
+            return input -> input + s;
+        }
 
         /**
          * Composes multiple decorators into a single pipeline.
@@ -113,7 +122,9 @@ public final class StructuralPatterns {
          */
         public static TextProcessor pipeline(TextProcessor... processors) {
             TextProcessor result = s -> s; // identity
-            for (var p : processors) result = result.andThen(p);
+            for (var p : processors) {
+                result = result.andThen(p);
+            }
             return result;
         }
     }
@@ -133,7 +144,9 @@ public final class StructuralPatterns {
 
     /** Real implementation of {@link DataService}. */
     public static final class RealDataService implements DataService {
-        @Override public String fetchData(String key) { return "data-for-" + key; }
+        @Override public String fetchData(String key) {
+     return "data-for-" + key;
+ }
     }
 
     /**
@@ -190,6 +203,7 @@ public final class StructuralPatterns {
          * @param children child entries
          */
         record Directory(String name, List<FileSystemEntry> children) implements FileSystemEntry {
+            @Override
             public long size() {
                 return children.stream().mapToLong(FileSystemEntry::size).sum();
             }
@@ -263,11 +277,15 @@ public final class StructuralPatterns {
         public OrderResult placeOrder(String item, int qty, double price) {
             // 1. Check inventory
             var inv = new Inventory(item, qty);
-            if (inv.qty() <= 0) return new OrderResult("", "", false);
+            if (inv.qty() <= 0) {
+                return new OrderResult("", "", false);
+            }
             // 2. Process payment
             String orderId = "ORD-" + System.nanoTime();
             var payment = new Payment(orderId, qty * price, true);
-            if (!payment.success()) return new OrderResult(orderId, "", false);
+            if (!payment.success()) {
+                return new OrderResult(orderId, "", false);
+            }
             // 3. Ship
             var shipment = new Shipment(orderId, "TRK-" + orderId.hashCode());
             return new OrderResult(orderId, shipment.trackingId(), true);

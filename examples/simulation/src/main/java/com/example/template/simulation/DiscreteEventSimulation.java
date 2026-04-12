@@ -1,8 +1,9 @@
 package com.example.template.simulation;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.PriorityQueue;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
 
 /**
  * Discrete Event Simulation (DES) engine.
@@ -19,6 +20,7 @@ import java.util.function.Consumer;
  * queue.printStats();
  * }</pre>
  */
+@SuppressWarnings({"PMD.RedundantFieldInitializer", "PMD.UnusedAssignment", "PMD.SystemPrintln", "PMD.UnusedPrivateField", "PMD.UnusedPrivateMethod", "PMD.ImmutableField"}) // Simulation example code
 public final class DiscreteEventSimulation {
 
     /**
@@ -40,9 +42,13 @@ public final class DiscreteEventSimulation {
     private long eventsProcessed = 0;
 
     /** Returns the current simulation clock time. @return current clock value */
-    public double clock() { return clock; }
+    public double clock() {
+        return clock;
+    }
     /** Returns the total number of events processed so far. @return event count */
-    public long eventsProcessed() { return eventsProcessed; }
+    public long eventsProcessed() {
+        return eventsProcessed;
+    }
 
     /**
      * Schedule an event at an absolute simulation time.
@@ -53,7 +59,9 @@ public final class DiscreteEventSimulation {
      * @throws IllegalArgumentException if {@code time} is before the current clock
      */
     public void schedule(double time, String name, Runnable action) {
-        if (time < clock) throw new IllegalArgumentException("Cannot schedule in the past");
+        if (time < clock) {
+            throw new IllegalArgumentException("Cannot schedule in the past");
+        }
         eventQueue.add(new Event(time, name, action));
     }
 
@@ -118,8 +126,10 @@ public final class DiscreteEventSimulation {
         private boolean serverBusy = false;
 
         // Statistics
-        private long arrivals, departures;
-        private double totalWaitTime, totalSystemTime;
+        private long arrivals;
+        private long departures;
+        private double totalWaitTime;
+        private double totalSystemTime;
         private double busyTime;
         private double lastEventTime = 0.0;
         private int maxQueueLength = 0;
@@ -132,8 +142,9 @@ public final class DiscreteEventSimulation {
          * @param serviceRate mean service rate μ (services per time unit)
          */
         public MM1Queue(DiscreteEventSimulation sim, double arrivalRate, double serviceRate) {
-            if (arrivalRate >= serviceRate)
+            if (arrivalRate >= serviceRate) {
                 System.err.println("Warning: ρ >= 1, queue will grow without bound");
+            }
             this.sim = sim;
             this.arrivalRate = arrivalRate;
             this.serviceRate = serviceRate;
@@ -190,15 +201,17 @@ public final class DiscreteEventSimulation {
         }
 
         /** Theoretical utilization ρ = λ/μ. @return server utilization factor */
-        public double rho() { return arrivalRate / serviceRate; }
+        public double rho() {
+            return arrivalRate / serviceRate;
+        }
 
         /** Prints queue statistics (arrivals, departures, utilization, wait times) to stdout. */
         public void printStats() {
-            double T = sim.clock();
+            double simTime = sim.clock();
             System.out.printf("  Arrivals:          %d%n", arrivals);
             System.out.printf("  Departures:        %d%n", departures);
             System.out.printf("  Server util (ρ):   %.4f  (theoretical: %.4f)%n",
-                    busyTime / T, rho());
+                    busyTime / simTime, rho());
             System.out.printf("  Avg system time:   %.4f  (theoretical: %.4f)%n",
                     departures > 0 ? totalSystemTime / departures : 0,
                     1.0 / (serviceRate - arrivalRate));
@@ -206,11 +219,17 @@ public final class DiscreteEventSimulation {
         }
 
         /** Returns total arrival count. @return number of arrivals */
-        public long arrivals() { return arrivals; }
+        public long arrivals() {
+            return arrivals;
+        }
         /** Returns total departure count. @return number of departures */
-        public long departures() { return departures; }
+        public long departures() {
+            return departures;
+        }
         /** Returns cumulative server busy time. @return busy time in simulation units */
-        public double busyTime() { return busyTime; }
+        public double busyTime() {
+            return busyTime;
+        }
     }
 
     /**

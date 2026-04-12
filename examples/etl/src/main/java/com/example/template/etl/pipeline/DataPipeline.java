@@ -24,7 +24,7 @@ import java.util.function.Predicate;
  *
  * @param <T> current element type in the pipeline
  */
-public class DataPipeline<T> {
+public final class DataPipeline<T> {
 
     private final Iterable<T> source;
 
@@ -63,7 +63,9 @@ public class DataPipeline<T> {
     public DataPipeline<T> filter(Predicate<T> predicate) {
         List<T> filtered = new ArrayList<>();
         for (T item : source) {
-            if (predicate.test(item)) filtered.add(item);
+            if (predicate.test(item)) {
+                filtered.add(item);
+            }
         }
         return new DataPipeline<>(filtered);
     }

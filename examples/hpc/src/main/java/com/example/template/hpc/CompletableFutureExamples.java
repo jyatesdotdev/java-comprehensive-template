@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -20,9 +19,10 @@ import java.util.function.Supplier;
  *   <li>Timeouts (Java 9+)</li>
  * </ul>
  */
+@SuppressWarnings({"PMD.UnusedFormalParameter", "PMD.SignatureDeclareThrowsException"}) // Example code
 public final class CompletableFutureExamples {
 
-    private CompletableFutureExamples() {}
+    private CompletableFutureExamples() { }
 
     /**
      * Chain dependent async operations.
@@ -107,7 +107,9 @@ public final class CompletableFutureExamples {
 
         return CompletableFuture.supplyAsync(operation, executor)
                 .handle((result, ex) -> {
-                    if (ex != null) return "ERROR: " + ex.getMessage();
+                    if (ex != null) {
+                        return "ERROR: " + ex.getMessage();
+                    }
                     return "OK: " + result;
                 });
     }
@@ -158,7 +160,9 @@ public final class CompletableFutureExamples {
     }
 
     private static void simulateLatency(long millis) {
-        try { Thread.sleep(millis); } catch (InterruptedException e) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }

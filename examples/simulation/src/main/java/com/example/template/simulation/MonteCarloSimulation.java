@@ -17,6 +17,7 @@ import java.util.stream.DoubleStream;
  * System.out.printf("Pi ≈ %.6f (stddev=%.6f)%n", result.mean(), result.stddev());
  * }</pre>
  */
+@SuppressWarnings("PMD.SystemPrintln") // Simulation example code
 public final class MonteCarloSimulation {
 
     /**
@@ -49,7 +50,9 @@ public final class MonteCarloSimulation {
      */
     public static Result run(long trials, boolean parallel, DoubleSupplier trial) {
         DoubleStream stream = DoubleStream.generate(trial).limit(trials);
-        if (parallel) stream = stream.parallel();
+        if (parallel) {
+            stream = stream.parallel();
+        }
 
         // Collect mean and variance in a single pass using Welford's algorithm
         double[] state = stream.collect(
@@ -90,7 +93,8 @@ public final class MonteCarloSimulation {
      */
     public static double piTrial() {
         var rng = ThreadLocalRandom.current();
-        double x = rng.nextDouble(), y = rng.nextDouble();
+        double x = rng.nextDouble();
+        double y = rng.nextDouble();
         return (x * x + y * y <= 1.0) ? 4.0 : 0.0;
     }
 

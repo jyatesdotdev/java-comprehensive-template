@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /** Entry point for the RESTful API example application. */
 @SpringBootApplication
+@SuppressWarnings("PMD.UseUtilityClass") // Spring Boot entry point, not a utility class
 public class RestApiApplication {
 
     /**

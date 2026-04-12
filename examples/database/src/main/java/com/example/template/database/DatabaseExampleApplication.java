@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * and transaction management with an embedded H2 database.
  */
 @SpringBootApplication
+@SuppressWarnings("PMD.UseUtilityClass") // Spring Boot entry point
 public class DatabaseExampleApplication {
 
     /**

@@ -26,6 +26,7 @@ import java.util.List;
  * -XX:+HeapDumpOnOutOfMemoryError               # Auto heap dump on OOM
  * }</pre>
  */
+@SuppressWarnings("PMD.SystemPrintln") // Profiling output
 public final class ProfilingUtils {
 
     private ProfilingUtils() {}

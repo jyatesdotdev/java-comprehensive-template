@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
  *   <li>Ensure operations are stateless, non-interfering, and associative</li>
  * </ul>
  */
+@SuppressWarnings({"PMD.LooseCoupling", "PMD.SignatureDeclareThrowsException", "PMD.UnusedPrivateMethod"}) // Example code
 public final class ParallelStreamExamples {
 
     private ParallelStreamExamples() {}
@@ -107,9 +108,13 @@ public final class ParallelStreamExamples {
     }
 
     private static boolean isPrime(int n) {
-        if (n < 2) return false;
+        if (n < 2) {
+            return false;
+        }
         for (int i = 2; i * i <= n; i++) {
-            if (n % i == 0) return false;
+            if (n % i == 0) {
+                return false;
+            }
         }
         return true;
     }

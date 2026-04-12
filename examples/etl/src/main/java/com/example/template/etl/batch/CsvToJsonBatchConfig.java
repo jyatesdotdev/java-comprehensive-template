@@ -37,7 +37,9 @@ import org.springframework.transaction.PlatformTransactionManager;
  * <pre>
  * &#64;SpringBootApplication
  * &#64;EnableBatchProcessing
- * public class BatchApp { public static void main(String[] args) { SpringApplication.run(BatchApp.class, args); } }
+ * public class BatchApp { public static void main(String[] args) {
+     SpringApplication.run(BatchApp.class, args);
+ } }
  * </pre>
  */
 @Configuration
