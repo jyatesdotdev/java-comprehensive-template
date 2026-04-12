@@ -7,6 +7,7 @@ WORKDIR /workspace
 
 # Copy POMs first for dependency caching
 COPY pom.xml .
+COPY app/pom.xml app/
 COPY examples/restful-api/pom.xml examples/restful-api/
 COPY examples/database/pom.xml examples/database/
 COPY examples/hpc/pom.xml examples/hpc/
@@ -16,12 +17,12 @@ COPY examples/patterns/pom.xml examples/patterns/
 COPY examples/simulation/pom.xml examples/simulation/
 COPY examples/testing/pom.xml examples/testing/
 
-RUN mvn dependency:go-offline -pl examples/restful-api -am -B -q
+RUN mvn dependency:go-offline -pl app -am -B -q
 
 # Copy source and build
 COPY . .
-RUN mvn package -pl examples/restful-api -am -B -q -DskipTests \
-    && mv examples/restful-api/target/template-restful-api-*.jar /app.jar
+RUN mvn package -pl app -am -B -q -DskipTests \
+    && mv app/target/template-app-*.jar /app.jar
 
 # ---- Stage 2: Extract layered jar ----
 FROM eclipse-temurin:21-jre-alpine AS extract

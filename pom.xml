@@ -13,6 +13,7 @@
     <description>Comprehensive Java template for enterprise development</description>
 
     <modules>
+        <module>app</module>
         <module>examples/restful-api</module>
         <module>examples/database</module>
         <module>examples/hpc</module>
@@ -242,8 +243,8 @@
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${checkstyle-plugin.version}</version>
                     <configuration>
-                        <configLocation>${maven.multiModuleProjectDirectory}/checkstyle.xml</configLocation>
-                        <suppressionsLocation>${maven.multiModuleProjectDirectory}/checkstyle-suppressions.xml</suppressionsLocation>
+                        <configLocation>${maven.multiModuleProjectDirectory}/config/checkstyle/checkstyle.xml</configLocation>
+                        <suppressionsLocation>${maven.multiModuleProjectDirectory}/config/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
                         <consoleOutput>true</consoleOutput>
                         <failsOnError>true</failsOnError>
                         <violationSeverity>warning</violationSeverity>
@@ -265,7 +266,7 @@
                         <effort>Max</effort>
                         <threshold>Low</threshold>
                         <xmlOutput>true</xmlOutput>
-                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/spotbugs-exclude.xml</excludeFilterFile>
+                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/config/spotbugs/spotbugs-exclude.xml</excludeFilterFile>
                         <plugins>
                             <plugin>
                                 <groupId>com.h3xstream.findsecbugs</groupId>
@@ -281,7 +282,7 @@
                     <version>${pmd-plugin.version}</version>
                     <configuration>
                         <rulesets>
-                            <ruleset>${maven.multiModuleProjectDirectory}/pmd-ruleset.xml</ruleset>
+                            <ruleset>${maven.multiModuleProjectDirectory}/config/pmd/pmd-ruleset.xml</ruleset>
                         </rulesets>
                         <targetJdk>${java.version}</targetJdk>
                         <includeTests>true</includeTests>
@@ -306,7 +307,7 @@
                         <outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
                         <!-- Suppression file for false positives -->
                         <suppressionFiles>
-                            <suppressionFile>${maven.multiModuleProjectDirectory}/owasp-suppressions.xml</suppressionFile>
+                            <suppressionFile>${maven.multiModuleProjectDirectory}/config/owasp/owasp-suppressions.xml</suppressionFile>
                         </suppressionFiles>
                         <!-- NVD API key (set via -DnvdApiKey=KEY or settings.xml) -->
                         <nvdApiKey>${nvdApiKey}</nvdApiKey>

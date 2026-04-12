@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: java-enterprise-template
+server:
+  port: 8080
