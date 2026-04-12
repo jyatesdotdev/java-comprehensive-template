@@ -39,6 +39,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- PostgreSQL JDBC driver (needed by PostgresContainerIT) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- REST Assured -->
         <dependency>
             <groupId>io.rest-assured</groupId>
