@@ -125,16 +125,15 @@ class MockitoFeaturesTest {
     @Test
     @DisplayName("Spy wraps a real object, allowing selective stubbing")
     void spyExample() {
-        var realList = new java.util.ArrayList<>(List.of("a", "b", "c"));
-        var spiedList = spy(realList);
+        var spiedService = spy(new UserService(repository));
 
-        // Real method is called
-        assertThat(spiedList.get(0)).isEqualTo("a");
+        // Real method is called by default
+        when(repository.findById(1L)).thenReturn(Optional.of(ALICE));
+        assertThat(spiedService.getById(1L)).isEqualTo(ALICE);
 
-        // Override specific behavior
-        doReturn("MOCKED").when(spiedList).get(1);
-        assertThat(spiedList.get(1)).isEqualTo("MOCKED");
-        assertThat(spiedList.size()).isEqualTo(3); // real size
+        // Override specific behavior on the spy
+        doReturn(ALICE).when(spiedService).getById(2L);
+        assertThat(spiedService.getById(2L)).isEqualTo(ALICE);
     }
 
     // ── Exception Stubbing ─────────────────────────────────────────────

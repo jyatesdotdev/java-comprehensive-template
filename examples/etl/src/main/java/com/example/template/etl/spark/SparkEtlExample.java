@@ -3,6 +3,9 @@ package com.example.template.etl.spark;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.FilterFunction;
+import org.apache.spark.api.java.function.MapFunction;
+import org.apache.spark.api.java.function.MapGroupsFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -145,9 +148,9 @@ public class SparkEtlExample {
     public static Dataset<SalesRecord> typedDatasetExample(SparkSession spark, List<SalesRecord> data) {
         Dataset<SalesRecord> ds = spark.createDataset(data, Encoders.bean(SalesRecord.class));
 
-        return ds.filter(r -> r.revenue() > 100.0)
-                .groupByKey(SalesRecord::region, Encoders.STRING())
-                .mapGroups((region, iter) -> {
+        return ds.filter((FilterFunction<SalesRecord>) r -> r.revenue() > 100.0)
+                .groupByKey((MapFunction<SalesRecord, String>) SalesRecord::region, Encoders.STRING())
+                .mapGroups((MapGroupsFunction<String, SalesRecord, SalesRecord>) (region, iter) -> {
                     double total = 0;
                     int count = 0;
                     while (iter.hasNext()) {
