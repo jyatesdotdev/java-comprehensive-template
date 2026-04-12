@@ -62,6 +62,7 @@ public class ProductWebClientExample {
      * @param id the product UUID
      * @return mono emitting the product response
      */
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public Mono<ProductResponse> getReactive(UUID id) {
         return webClient.get()
                 .uri("/api/v1/products/{id}", id)
