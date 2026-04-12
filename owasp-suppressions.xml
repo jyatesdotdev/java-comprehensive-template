@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+    <!--
+        OWASP Dependency-Check Suppression File
+        ========================================
+        Use this file to suppress false positives from dependency-check scans.
+
+        Suppression examples:
+
+        1. Suppress a specific CVE on a specific dependency:
+        <suppress>
+            <notes><![CDATA[Not exploitable: we don't use the affected feature]]></notes>
+            <gav regex="true">^com\.example:my-library:.*$</gav>
+            <cve>CVE-2024-XXXXX</cve>
+        </suppress>
+
+        2. Suppress by CPE (Common Platform Enumeration) — useful for misidentified deps:
+        <suppress>
+            <notes><![CDATA[False positive: dependency-check misidentifies this library]]></notes>
+            <packageUrl regex="true">^pkg:maven/com\.example/my-library@.*$</packageUrl>
+            <cpe>cpe:/a:wrong_vendor:wrong_product</cpe>
+        </suppress>
+
+        3. Suppress all CVEs below a score for a dependency:
+        <suppress>
+            <notes><![CDATA[Low-risk: accepted per security review 2024-01-15]]></notes>
+            <gav regex="true">^com\.example:legacy-lib:.*$</gav>
+            <cvssBelow>4</cvssBelow>
+        </suppress>
+
+        Always include:
+        - A <notes> element explaining WHY the suppression is safe
+        - The date the suppression was reviewed
+        - A reference to the security review ticket if applicable
+    -->
+
+</suppressions>

@@ -1,0 +1,83 @@
+# ============================================================
+# Database Module Configuration
+# ============================================================
+
+spring:
+  # --- DataSource (H2 in-memory for development) ---
+  datasource:
+    url: jdbc:h2:mem:templatedb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+    # --- HikariCP connection pool tuning ---
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000   # 30s — max wait for connection
+      idle-timeout: 600000        # 10min — idle connection eviction
+      max-lifetime: 1800000       # 30min — max connection lifetime
+      leak-detection-threshold: 60000  # 1min — warn on potential leaks
+      pool-name: TemplateHikariPool
+
+  # --- JPA / Hibernate ---
+  jpa:
+    open-in-view: false  # Best practice: disable OSIV
+    hibernate:
+      ddl-auto: validate  # Use Flyway for schema; Hibernate only validates
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 25          # Batch inserts/updates
+          order_inserts: true
+          order_updates: true
+        default_batch_fetch_size: 16  # Avoid N+1 queries
+
+  # --- Flyway ---
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  # --- H2 Console (dev only) ---
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# --- Logging ---
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE  # Log bound parameters (Hibernate 6+)
+    com.zaxxer.hikari: DEBUG
+
+---
+# ============================================================
+# Production profile — PostgreSQL
+# ============================================================
+spring:
+  config:
+    activate:
+      on-profile: production
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/templatedb
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+
+  flyway:
+    locations: classpath:db/migration,classpath:db/migration/postgresql
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    org.hibernate.SQL: WARN
+    com.zaxxer.hikari: INFO

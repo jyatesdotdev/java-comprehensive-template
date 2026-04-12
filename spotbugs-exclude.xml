@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!--
+        SpotBugs / Find Security Bugs exclusion filter.
+        Add entries here to suppress false positives.
+        See: https://spotbugs.readthedocs.io/en/stable/filter.html
+    -->
+
+    <!-- Example: suppress a specific bug in a specific class -->
+    <!--
+    <Match>
+        <Class name="com.example.MyClass"/>
+        <Bug pattern="SQL_INJECTION_JDBC"/>
+    </Match>
+    -->
+
+    <!-- Suppress low-confidence findings in generated code -->
+    <Match>
+        <Source name="~.*Generated.*\.java"/>
+    </Match>
+
+    <!-- Suppress serialization warnings on DTOs (common false positive) -->
+    <Match>
+        <Bug pattern="SE_BAD_FIELD"/>
+        <Class name="~.*Dto"/>
+    </Match>
+</FindBugsFilter>

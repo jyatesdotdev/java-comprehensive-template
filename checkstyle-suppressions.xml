@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!--
+    Checkstyle suppressions for false positives and intentional exceptions.
+    Add entries here instead of disabling rules globally.
+-->
+<suppressions>
+    <!-- Generated code -->
+    <suppress files=".*Generated.*\.java" checks=".*"/>
+
+    <!-- Test classes: relax method length and complexity -->
+    <suppress files=".*Test\.java" checks="MethodLength"/>
+    <suppress files=".*Test\.java" checks="CyclomaticComplexity"/>
+    <suppress files=".*Test\.java" checks="MissingJavadocType"/>
+    <suppress files=".*IT\.java" checks="MethodLength"/>
+    <suppress files=".*IT\.java" checks="CyclomaticComplexity"/>
+    <suppress files=".*IT\.java" checks="MissingJavadocType"/>
+
+    <!-- Allow System.out in main methods and CLI entry points -->
+    <!-- <suppress files="Main\.java" checks="RegexpSingleline" message="System\.out"/> -->
+</suppressions>

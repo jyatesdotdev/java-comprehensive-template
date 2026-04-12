@@ -1,0 +1,223 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  checks: write
+  security-events: write
+
+env:
+  JAVA_VERSION: '21'
+  MAVEN_OPTS: '-Xmx1024m'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
+
+      - name: Build & Unit Tests
+        run: ./mvnw -B clean verify -DskipITs
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit Tests
+          path: '**/target/surefire-reports/TEST-*.xml'
+          reporter: java-junit
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
+
+      - name: Integration Tests
+        run: ./mvnw -B verify -pl examples/testing,examples/database -DskipUTs
+
+      - name: Publish Integration Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Integration Tests
+          path: '**/target/failsafe-reports/TEST-*.xml'
+          reporter: java-junit
+
+  quality-gates:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
+
+      - name: Static Analysis (SpotBugs + Checkstyle + PMD)
+        run: ./mvnw -B verify -Psecurity-scan-quick -DskipTests
+
+      - name: JaCoCo Coverage Report
+        run: ./mvnw -B verify jacoco:report-aggregate
+
+      - name: Check Coverage Threshold
+        run: ./mvnw -B jacoco:check
+
+  dependency-scan:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
+
+      - name: OWASP Dependency-Check
+        run: >
+          ./mvnw -B dependency-check:aggregate
+          -Dowasp.failBuildOnCVSS=${{ vars.OWASP_CVSS_THRESHOLD || '7' }}
+          ${{ secrets.NVD_API_KEY && format('-DnvdApiKey={0}', secrets.NVD_API_KEY) || '' }}
+        continue-on-error: true
+        id: owasp
+
+      - name: Upload OWASP SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: target/dependency-check/dependency-check-report.sarif
+          category: owasp-dependency-check
+        continue-on-error: true
+
+      - name: Upload OWASP HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: owasp-dependency-check-report
+          path: target/dependency-check/dependency-check-report.html
+
+      - name: Fail on OWASP findings
+        if: steps.owasp.outcome == 'failure'
+        run: |
+          echo "::error::OWASP Dependency-Check found vulnerabilities above CVSS threshold"
+          exit 1
+
+  container-scan:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
+
+      - name: Build JAR
+        run: ./mvnw -B package -pl examples/restful-api -am -DskipTests
+
+      - name: Build Docker Image
+        run: docker build -t java-template-api:${{ github.sha }} -f examples/restful-api/Dockerfile examples/restful-api
+
+      - name: Trivy Vulnerability Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: java-template-api:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+        continue-on-error: true
+        id: trivy
+
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-container-scan
+
+      - name: Trivy Table Report
+        uses: aquasecurity/trivy-action@0.28.0
+        if: always()
+        with:
+          image-ref: java-template-api:${{ github.sha }}
+          format: table
+          severity: CRITICAL,HIGH,MEDIUM
+
+      - name: Fail on Trivy findings
+        if: steps.trivy.outcome == 'failure'
+        run: |
+          echo "::error::Trivy found CRITICAL or HIGH vulnerabilities in container image"
+          exit 1
+
+  snyk-scan:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    continue-on-error: true  # Don't block pipeline if Snyk is unconfigured
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/maven@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --sarif-file-output=snyk-results.sarif
+        continue-on-error: true
+
+      - name: Upload Snyk SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('snyk-results.sarif') != ''
+        with:
+          sarif_file: snyk-results.sarif
+          category: snyk-dependency-scan
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [ quality-gates, dependency-scan, container-scan ]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
+
+      - name: Build JAR
+        run: ./mvnw -B package -pl examples/restful-api -am -DskipTests
+
+      - name: Build Docker Image
+        run: docker build -t java-template-api:${{ github.sha }} -f examples/restful-api/Dockerfile examples/restful-api

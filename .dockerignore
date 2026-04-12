@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+
+# Build output
+target/
+build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Maven wrapper jar
+.mvn/wrapper/maven-wrapper.jar
+
+# Documentation
+docs/
+*.md
+LICENSE
+
+# CI/CD
+.github/
+
+# Docker
+Dockerfile
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and runtime
+*.log
+logs/
+*.pid
+
+# Environment files
+.env
+*.env.local
+
+# OWASP cache
+dependency-check-data/

@@ -1,0 +1,46 @@
+# Build output
+target/
+build/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+*.swp
+*~
+nb-configuration.xml
+
+# Maven wrapper jar (keep mvnw scripts)
+.mvn/wrapper/maven-wrapper.jar
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+hs_err_pid*
+
+# Coverage and reports
+jacoco.exec
+site/
+
+# Environment files
+.env
+*.env.local
+
+# OWASP dependency-check data cache
+dependency-check-data/
