@@ -139,7 +139,7 @@ public class ProductRestTemplateClient {
                 .uri("/api/v1/products/{id}", id)
                 .retrieve()
                 .onStatus(status -> status.value() == 404, (req, resp) -> {
-                    throw new RuntimeException("Product not found: " + id);
+                    throw new RuntimeException("Product not found: " + id); // NOPMD - example code
                 })
                 .body(ProductResponse.class);
     }
