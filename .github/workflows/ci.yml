@@ -81,7 +81,12 @@ jobs:
           cache: maven
 
       - name: Static Analysis (SpotBugs + Checkstyle + PMD)
-        run: ./mvnw -B verify -Psecurity-scan-quick -DskipTests -Dpmd.printFailingErrors=true
+        run: |
+          ./mvnw -B verify -Psecurity-scan-quick -DskipTests || {
+            echo "=== PMD Violations ==="
+            find . -path "*/target/pmd.xml" -exec grep -l "violation" {} \; -exec cat {} \;
+            exit 1
+          }
 
       - name: JaCoCo Coverage Report
         run: ./mvnw -B verify jacoco:report-aggregate
