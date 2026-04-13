@@ -10,6 +10,11 @@
         <Source name="~.*Generated.*\.java"/>
     </Match>
 
+    <!-- Exclude JMH-generated benchmark harness code -->
+    <Match>
+        <Package name="~.*\.jmh_generated"/>
+    </Match>
+
     <!-- Suppress serialization warnings on DTOs (common false positive) -->
     <Match>
         <Bug pattern="SE_BAD_FIELD"/>
