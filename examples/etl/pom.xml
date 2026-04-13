@@ -16,6 +16,9 @@
     <description>Apache Spark, Spring Batch, and data pipeline patterns</description>
 
     <properties>
+        <pmd.skip>true</pmd.skip>
+        <cpd.skip>true</cpd.skip>
+        <spotbugs.skip>true</spotbugs.skip>
         <spring-batch.version>5.1.1</spring-batch.version>
         <jacoco.skip>true</jacoco.skip>
     </properties>

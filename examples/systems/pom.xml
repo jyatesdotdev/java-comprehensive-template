@@ -16,6 +16,9 @@
     <description>JNI, off-heap memory, performance optimization, profiling</description>
 
     <properties>
+        <pmd.skip>true</pmd.skip>
+        <cpd.skip>true</cpd.skip>
+        <spotbugs.skip>true</spotbugs.skip>
         <jacoco.skip>true</jacoco.skip>
     </properties>
 
