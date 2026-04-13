@@ -15,6 +15,7 @@ import static org.apache.spark.sql.functions.*;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Apache Spark ETL examples demonstrating both RDD and Dataset/DataFrame APIs.
@@ -51,7 +52,7 @@ public final class SparkEtlExample {
             JavaRDD<String> rdd = sc.parallelize(lines);
 
             return rdd
-                    .flatMap(line -> Arrays.asList(line.toLowerCase().split("\\W+")).iterator())
+                    .flatMap(line -> Arrays.asList(line.toLowerCase(Locale.ROOT).split("\\W+")).iterator())
                     .filter(word -> !word.isEmpty())
                     .mapToPair(word -> new scala.Tuple2<>(word, 1))
                     .reduceByKey(Integer::sum)
@@ -70,12 +71,11 @@ public final class SparkEtlExample {
      * @return transformed and aggregated dataset
      */
     public static Dataset<Row> csvTransformExample(String inputPath, String outputPath) {
-        SparkSession spark = SparkSession.builder()
+        try (SparkSession spark = SparkSession.builder()
                 .appName("CSV-ETL")
                 .master("local[*]")
-                .getOrCreate();
+                .getOrCreate()) {
 
-        try {
             // Extract: read CSV with inferred schema
             Dataset<Row> raw = spark.read()
                     .option("header", "true")
@@ -100,8 +100,6 @@ public final class SparkEtlExample {
             }
 
             return transformed;
-        } finally {
-            spark.stop();
         }
     }
 
