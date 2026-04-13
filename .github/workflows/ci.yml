@@ -81,7 +81,7 @@ jobs:
           cache: maven
 
       - name: Static Analysis (SpotBugs + Checkstyle + PMD)
-        run: ./mvnw -B verify -Psecurity-scan-quick -DskipTests
+        run: ./mvnw -B verify -Psecurity-scan-quick -DskipTests -Dpmd.printFailingErrors=true
 
       - name: JaCoCo Coverage Report
         run: ./mvnw -B verify jacoco:report-aggregate
