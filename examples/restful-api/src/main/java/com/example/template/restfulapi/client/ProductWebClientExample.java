@@ -2,6 +2,7 @@ package com.example.template.restfulapi.client;
 
 import com.example.template.restfulapi.dto.ProductRequest;
 import com.example.template.restfulapi.dto.ProductResponse;
+import com.example.template.restfulapi.exception.ResourceNotFoundException;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
@@ -62,13 +63,12 @@ public class ProductWebClientExample {
      * @param id the product UUID
      * @return mono emitting the product response
      */
-    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
     public Mono<ProductResponse> getReactive(UUID id) {
         return webClient.get()
                 .uri("/api/v1/products/{id}", id)
                 .retrieve()
                 .onStatus(status -> status.value() == 404,
-                        resp -> Mono.error(new RuntimeException("Product not found: " + id)))
+                        resp -> Mono.error(new ResourceNotFoundException("Product not found: " + id)))
                 .bodyToMono(ProductResponse.class);
     }
 

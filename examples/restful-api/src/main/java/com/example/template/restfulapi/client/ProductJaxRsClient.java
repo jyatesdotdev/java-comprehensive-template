@@ -2,6 +2,8 @@ package com.example.template.restfulapi.client;
 
 import com.example.template.restfulapi.dto.ProductRequest;
 import com.example.template.restfulapi.dto.ProductResponse;
+import com.example.template.restfulapi.exception.ClientException;
+import com.example.template.restfulapi.exception.ResourceNotFoundException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -31,7 +33,6 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Implements {@link AutoCloseable} — use with try-with-resources.
  */
-@SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes") // Example code uses RuntimeException for simplicity
 public class ProductJaxRsClient implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(ProductJaxRsClient.class);
@@ -69,7 +70,7 @@ public class ProductJaxRsClient implements AutoCloseable {
      *
      * @param id the product UUID
      * @return the matching product response
-     * @throws RuntimeException if the product is not found (404)
+     * @throws ResourceNotFoundException if the product is not found (404)
      */
     public ProductResponse get(UUID id) {
         try (Response response = client.target(baseUrl)
@@ -79,7 +80,7 @@ public class ProductJaxRsClient implements AutoCloseable {
                 .get()) {
 
             if (response.getStatus() == 404) {
-                throw new RuntimeException("Product not found: " + id);
+                throw new ResourceNotFoundException("Product not found: " + id);
             }
             return response.readEntity(ProductResponse.class);
         }
@@ -121,7 +122,7 @@ public class ProductJaxRsClient implements AutoCloseable {
      * DELETE a product.
      *
      * @param id the product UUID
-     * @throws RuntimeException if the server does not return 204
+     * @throws ClientException if the server does not return 204
      */
     public void delete(UUID id) {
         try (Response response = client.target(baseUrl)
@@ -131,7 +132,7 @@ public class ProductJaxRsClient implements AutoCloseable {
                 .delete()) {
 
             if (response.getStatus() != 204) {
-                throw new RuntimeException("Delete failed with status: " + response.getStatus());
+                throw new ClientException("Delete failed with status: " + response.getStatus());
             }
         }
     }

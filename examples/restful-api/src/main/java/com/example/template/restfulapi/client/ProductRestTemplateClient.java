@@ -2,6 +2,7 @@ package com.example.template.restfulapi.client;
 
 import com.example.template.restfulapi.dto.ProductRequest;
 import com.example.template.restfulapi.dto.ProductResponse;
+import com.example.template.restfulapi.exception.ResourceNotFoundException;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -23,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
  *
  * <p>Both are synchronous and blocking. For non-blocking I/O, see {@link ProductWebClientExample}.
  */
-@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "PMD.AvoidDuplicateLiterals"}) // Example code
+@SuppressWarnings("PMD.AvoidDuplicateLiterals") // Example code
 public class ProductRestTemplateClient {
 
     private static final Logger log = LoggerFactory.getLogger(ProductRestTemplateClient.class);
@@ -132,14 +133,14 @@ public class ProductRestTemplateClient {
      *
      * @param id the product UUID
      * @return the matching product response
-     * @throws RuntimeException if the product is not found (404)
+     * @throws ResourceNotFoundException if the product is not found (404)
      */
     public ProductResponse getWithRestClient(UUID id) {
         return restClient.get()
                 .uri("/api/v1/products/{id}", id)
                 .retrieve()
                 .onStatus(status -> status.value() == 404, (req, resp) -> {
-                    throw new RuntimeException("Product not found: " + id);
+                    throw new ResourceNotFoundException("Product not found: " + id);
                 })
                 .body(ProductResponse.class);
     }
