@@ -81,7 +81,19 @@ jobs:
           cache: maven
 
       - name: Static Analysis (SpotBugs + Checkstyle + PMD)
-        run: ./mvnw -B verify -Psecurity-scan-quick -DskipTests
+        run: |
+          ./mvnw -B verify -Psecurity-scan-quick -DskipTests || {
+            echo "=== PMD Violations ==="
+            find . -path "*/target/pmd.xml" -exec python3 -c "
+          import xml.etree.ElementTree as ET, sys
+          tree = ET.parse(sys.argv[1])
+          ns = {'p': 'http://pmd.sourceforge.net/report/2.0.0'}
+          for f in tree.findall('.//p:file', ns):
+            for v in f.findall('p:violation', ns):
+              print(f'{f.get(\"name\")}:{v.get(\"beginline\")} [{v.get(\"rule\")}] {v.text.strip()}')
+          " {} \;
+            exit 1
+          }
 
       - name: JaCoCo Coverage Report
         run: ./mvnw -B verify jacoco:report-aggregate

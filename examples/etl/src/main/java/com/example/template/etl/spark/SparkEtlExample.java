@@ -136,7 +136,9 @@ public final class SparkEtlExample {
      * @param region  sales region
      * @param revenue revenue amount
      */
-    public record SalesRecord(String product, String region, double revenue) implements Serializable {}
+    @SuppressWarnings("PMD.MissingSerialVersionUID") // Records handle serialization without serialVersionUID
+    public record SalesRecord(String product, String region, double revenue) implements Serializable {
+    }
 
     /**
      * Typed Dataset API — compile-time type safety with Spark optimizations.
