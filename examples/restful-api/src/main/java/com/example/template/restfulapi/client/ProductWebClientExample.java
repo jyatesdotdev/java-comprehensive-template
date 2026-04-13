@@ -68,7 +68,7 @@ public class ProductWebClientExample {
                 .uri("/api/v1/products/{id}", id)
                 .retrieve()
                 .onStatus(status -> status.value() == 404,
-                        resp -> Mono.error(new RuntimeException("Product not found: " + id))) // NOPMD - example code
+                        resp -> Mono.error(new RuntimeException("Product not found: " + id)))
                 .bodyToMono(ProductResponse.class);
     }
 
