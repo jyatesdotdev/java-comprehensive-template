@@ -11,6 +11,9 @@
     <!-- Generated code -->
     <suppress files=".*Generated.*\.java" checks=".*"/>
 
+    <!-- JMH-generated benchmark harness code -->
+    <suppress files=".*jmh_generated.*\.java" checks=".*"/>
+
     <!-- Test classes: relax method length and complexity -->
     <suppress files=".*Test\.java" checks="MethodLength"/>
     <suppress files=".*Test\.java" checks="CyclomaticComplexity"/>
