@@ -74,6 +74,7 @@
         Exclude files via pattern:
     -->
     <exclude-pattern>.*/generated/.*</exclude-pattern>
+    <exclude-pattern>.*/jmh_generated/.*</exclude-pattern>
     <exclude-pattern>.*/target/.*</exclude-pattern>
 
 </ruleset>
