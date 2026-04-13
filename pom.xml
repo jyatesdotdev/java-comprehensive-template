@@ -323,6 +323,10 @@
                         <failOnViolation>true</failOnViolation>
                         <printFailingErrors>true</printFailingErrors>
                         <linkXRef>false</linkXRef>
+                        <!-- Exclude JMH-generated benchmark harness code -->
+                        <excludeRoots>
+                            <excludeRoot>target/generated-test-sources/jmh</excludeRoot>
+                        </excludeRoots>
                     </configuration>
                 </plugin>
                 <plugin>
