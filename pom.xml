@@ -327,6 +327,9 @@
                         <excludeRoots>
                             <excludeRoot>target/generated-test-sources/jmh</excludeRoot>
                         </excludeRoots>
+                        <excludes>
+                            <exclude>**/jmh_generated/**</exclude>
+                        </excludes>
                     </configuration>
                 </plugin>
                 <plugin>
