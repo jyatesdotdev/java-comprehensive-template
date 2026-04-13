@@ -136,8 +136,9 @@ public final class SparkEtlExample {
      * @param region  sales region
      * @param revenue revenue amount
      */
-    @SuppressWarnings("PMD.MissingSerialVersionUID") // Records handle serialization without serialVersionUID
     public record SalesRecord(String product, String region, double revenue) implements Serializable {
+        @java.io.Serial
+        private static final long serialVersionUID = 1L;
     }
 
     /**
