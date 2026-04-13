@@ -59,14 +59,16 @@ class PostgresContainerIT {
 
     @Test
     @DisplayName("Insert and query a user via JDBC")
+    @SuppressWarnings("PMD.CheckResultSet") // assertThat(rs.next()).isTrue() checks the return value
     void insertAndQuery() throws SQLException {
         try (var ps = connection.prepareStatement(
                 "INSERT INTO users (name, email) VALUES (?, ?) RETURNING id")) {
             ps.setString(1, "Alice");
             ps.setString(2, "alice@example.com");
-            var rs = ps.executeQuery();
-            assertThat(rs.next()).isTrue();
-            assertThat(rs.getLong("id")).isEqualTo(1L);
+            try (var rs = ps.executeQuery()) {
+                assertThat(rs.next()).isTrue();
+                assertThat(rs.getLong("id")).isEqualTo(1L);
+            }
         }
 
         try (var stmt = connection.createStatement();
