@@ -169,7 +169,7 @@ public final class CreationalPatterns {
          * @throws IllegalArgumentException if the type is unknown
          */
         static Shape of(String type, double... dims) {
-            return switch (type.toLowerCase()) {
+            return switch (type.toLowerCase(java.util.Locale.ROOT)) {
                 case "circle"    -> new Circle(dims[0]);
                 case "rectangle" -> new Rectangle(dims[0], dims[1]);
                 case "triangle"  -> new Triangle(dims[0], dims[1]);

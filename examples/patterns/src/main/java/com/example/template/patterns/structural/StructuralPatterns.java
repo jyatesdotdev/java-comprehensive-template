@@ -165,7 +165,7 @@ public final class StructuralPatterns {
             return result;
         };
         return (DataService) Proxy.newProxyInstance(
-                DataService.class.getClassLoader(),
+                Thread.currentThread().getContextClassLoader(),
                 new Class[]{DataService.class},
                 handler);
     }
