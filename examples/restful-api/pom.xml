@@ -16,9 +16,6 @@
     <description>REST server and client implementations with Spring Boot</description>
 
     <properties>
-        <pmd.skip>true</pmd.skip>
-        <cpd.skip>true</cpd.skip>
-        <spotbugs.skip>true</spotbugs.skip>
         <jacoco.skip>true</jacoco.skip>
     </properties>
 
