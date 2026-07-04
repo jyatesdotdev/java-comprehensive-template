@@ -19,20 +19,9 @@
         <jacoco.skip>true</jacoco.skip>
     </properties>
 
+    <!-- Common test dependencies (JUnit, AssertJ, Mockito) are inherited from the parent.
+         JMH benchmarks live in examples/systems, not here. -->
     <dependencies>
-        <!-- JMH for micro-benchmarking (optional, for performance testing) -->
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-core</artifactId>
-            <version>1.37</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-generator-annprocess</artifactId>
-            <version>1.37</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <!--

@@ -22,124 +22,123 @@ import java.util.List;
  * Order entity demonstrating JPA annotations, relationships, and lifecycle callbacks.
  *
  * <p>Key concepts shown:
+ *
  * <ul>
- *   <li>{@code @Entity} / {@code @Table} — mapping to database table</li>
- *   <li>{@code @GeneratedValue} — ID generation strategies</li>
- *   <li>{@code @OneToMany} with cascade and orphan removal</li>
- *   <li>{@code @Enumerated} — mapping Java enums</li>
- *   <li>{@code @PrePersist} / {@code @PreUpdate} — lifecycle callbacks</li>
- *   <li>Optimistic locking with {@code @Version}</li>
+ *   <li>{@code @Entity} / {@code @Table} — mapping to database table
+ *   <li>{@code @GeneratedValue} — ID generation strategies
+ *   <li>{@code @OneToMany} with cascade and orphan removal
+ *   <li>{@code @Enumerated} — mapping Java enums
+ *   <li>{@code @PrePersist} / {@code @PreUpdate} — lifecycle callbacks
+ *   <li>Optimistic locking with {@code @Version}
  * </ul>
  */
 @Entity
 @Table(name = "orders")
 public class Order {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String customerName;
+  @Column(nullable = false, length = 100)
+  private String customerName;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OrderStatus status = OrderStatus.PENDING;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private OrderStatus status = OrderStatus.PENDING;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<OrderItem> items = new ArrayList<>();
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  private final List<OrderItem> items = new ArrayList<>();
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal totalAmount = BigDecimal.ZERO;
+  @Column(nullable = false, precision = 12, scale = 2)
+  private BigDecimal totalAmount = BigDecimal.ZERO;
 
-    @Version
-    private Integer version;
+  @Version private Integer version;
 
-    @Column(updatable = false)
-    private Instant createdAt;
+  @Column(updatable = false)
+  private Instant createdAt;
 
-    private Instant updatedAt;
+  private Instant updatedAt;
 
-    @PrePersist
-    void onCreate() {
-        this.createdAt = Instant.now();
-        this.updatedAt = this.createdAt;
-    }
+  @PrePersist
+  void onCreate() {
+    this.createdAt = Instant.now();
+    this.updatedAt = this.createdAt;
+  }
 
-    @PreUpdate
-    void onUpdate() {
-        this.updatedAt = Instant.now();
-    }
+  @PreUpdate
+  void onUpdate() {
+    this.updatedAt = Instant.now();
+  }
 
-    // --- Convenience methods ---
+  // --- Convenience methods ---
 
-    /**
-     * Adds an item to this order, sets the back-reference, and recalculates the total.
-     *
-     * @param item the order item to add
-     */
-    public void addItem(OrderItem item) {
-        items.add(item);
-        item.setOrder(this);
-        recalculateTotal();
-    }
+  /**
+   * Adds an item to this order, sets the back-reference, and recalculates the total.
+   *
+   * @param item the order item to add
+   */
+  public void addItem(OrderItem item) {
+    items.add(item);
+    item.setOrder(this);
+    recalculateTotal();
+  }
 
-    /**
-     * Removes an item from this order, clears the back-reference, and recalculates the total.
-     *
-     * @param item the order item to remove
-     */
-    public void removeItem(OrderItem item) {
-        items.remove(item);
-        item.setOrder(null);
-        recalculateTotal();
-    }
+  /**
+   * Removes an item from this order, clears the back-reference, and recalculates the total.
+   *
+   * @param item the order item to remove
+   */
+  public void removeItem(OrderItem item) {
+    items.remove(item);
+    item.setOrder(null);
+    recalculateTotal();
+  }
 
-    private void recalculateTotal() {
-        this.totalAmount = items.stream()
-                .map(OrderItem::getLineTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+  private void recalculateTotal() {
+    this.totalAmount =
+        items.stream().map(OrderItem::getLineTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
 
-    // --- Getters / Setters ---
+  // --- Getters / Setters ---
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getCustomerName() {
-        return customerName;
-    }
+  public String getCustomerName() {
+    return customerName;
+  }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
+  public void setCustomerName(String customerName) {
+    this.customerName = customerName;
+  }
 
-    public OrderStatus getStatus() {
-        return status;
-    }
+  public OrderStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
+  public void setStatus(OrderStatus status) {
+    this.status = status;
+  }
 
-    public List<OrderItem> getItems() {
-        return items;
-    }
+  public List<OrderItem> getItems() {
+    return items;
+  }
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
+  public BigDecimal getTotalAmount() {
+    return totalAmount;
+  }
 
-    public Integer getVersion() {
-        return version;
-    }
+  public Integer getVersion() {
+    return version;
+  }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
 }

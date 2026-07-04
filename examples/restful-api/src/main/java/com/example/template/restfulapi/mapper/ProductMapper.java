@@ -7,28 +7,34 @@ import com.example.template.restfulapi.dto.ProductResponse;
 /** Maps between domain entities and DTOs. */
 public final class ProductMapper {
 
-    private ProductMapper() { }
+  private ProductMapper() {}
 
-    /**
-     * Converts a domain entity to a response DTO.
-     *
-     * @param p the product entity
-     * @return product response DTO
-     */
-    public static ProductResponse toResponse(Product p) {
-        return new ProductResponse(p.getId(), p.getName(), p.getDescription(), p.getPrice(), p.getCreatedAt(),
-                p.getUpdatedAt());
-    }
+  /**
+   * Converts a domain entity to a response DTO.
+   *
+   * @param p the product entity
+   * @return product response DTO
+   */
+  public static ProductResponse toResponse(Product p) {
+    return new ProductResponse(
+        p.getId(),
+        p.getName(),
+        p.getDescription(),
+        p.getPrice(),
+        p.getCreatedAt(),
+        p.getUpdatedAt());
+  }
 
-    /**
-     * Applies request fields to an existing entity (partial update).
-     *
-     * @param product the entity to update
-     * @param request the incoming request data
-     */
-    public static void updateEntity(Product product, ProductRequest request) {
-        product.setName(request.name());
-        product.setDescription(request.description());
-        product.setPrice(request.price());
-    }
+  /**
+   * Applies all request fields to an existing entity (full overwrite: a {@code null} description in
+   * the request clears the stored value).
+   *
+   * @param product the entity to update
+   * @param request the incoming request data
+   */
+  public static void updateEntity(Product product, ProductRequest request) {
+    product.setName(request.name());
+    product.setDescription(request.description());
+    product.setPrice(request.price());
+  }
 }

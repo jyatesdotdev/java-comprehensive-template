@@ -30,6 +30,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Actuator (health endpoint used by the Dockerfile HEALTHCHECK) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- WebClient (reactive HTTP client) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

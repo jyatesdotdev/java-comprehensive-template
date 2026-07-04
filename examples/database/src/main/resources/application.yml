@@ -72,7 +72,10 @@ spring:
       minimum-idle: 10
 
   flyway:
-    locations: classpath:db/migration,classpath:db/migration/postgresql
+    # Base migrations use portable, SQL-standard DDL that runs on both H2 and PostgreSQL.
+    # If a vendor-specific migration ever becomes necessary, add it under
+    # db/migration/postgresql and append that path here.
+    locations: classpath:db/migration
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect

@@ -16,7 +16,7 @@
     <description>Apache Spark, Spring Batch, and data pipeline patterns</description>
 
     <properties>
-        <spring-batch.version>5.1.1</spring-batch.version>
+        <!-- Spring Batch version is managed by the Spring Boot BOM in the parent pom -->
         <jacoco.skip>true</jacoco.skip>
     </properties>
 
@@ -40,7 +40,11 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Apache Spark Core + SQL -->
+        <!-- Apache Spark Core + SQL.
+             log4j-slf4j2-impl is excluded because it cannot coexist with Spring Boot's
+             log4j-to-slf4j bridge: SLF4J 2 auto-selects the Log4j provider and throws a
+             LoggingException at the first LoggerFactory.getLogger call. Logback is this
+             module's logging backend. -->
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.13</artifactId>
@@ -54,12 +58,22 @@
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j2-impl</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_2.13</artifactId>
             <version>${spark.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j2-impl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Jackson for data serialization -->

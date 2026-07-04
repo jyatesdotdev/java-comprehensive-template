@@ -8,12 +8,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SuppressWarnings("PMD.UseUtilityClass") // Spring Boot entry point, not a utility class
 public class RestApiApplication {
 
-    /**
-     * Launches the Spring Boot application.
-     *
-     * @param args command-line arguments
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(RestApiApplication.class, args);
-    }
+  /**
+   * Launches the Spring Boot application.
+   *
+   * @param args command-line arguments
+   */
+  public static void main(String[] args) {
+    SpringApplication.run(RestApiApplication.class, args);
+  }
 }

@@ -13,50 +13,46 @@ import reactor.netty.http.client.HttpClient;
 /**
  * Spring configuration for REST client beans.
  *
- * <p>Demonstrates production-ready configuration with timeouts, base URLs,
- * and default headers. In real applications, externalize the base URL
- * to {@code application.yml}.
+ * <p>Demonstrates production-ready configuration with timeouts, base URLs, and default headers. In
+ * real applications, externalize the base URL to {@code application.yml}.
  */
 @Configuration
 public class RestClientConfig {
 
-    /**
-     * RestTemplate with timeouts via RestTemplateBuilder (preferred over {@code new RestTemplate()}).
-     *
-     * @param builder the auto-configured builder
-     * @return configured RestTemplate
-     */
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder
-                .setConnectTimeout(Duration.ofSeconds(5))
-                .setReadTimeout(Duration.ofSeconds(10))
-                .build();
-    }
+  /**
+   * RestTemplate with timeouts via RestTemplateBuilder (preferred over {@code new RestTemplate()}).
+   *
+   * @param builder the auto-configured builder
+   * @return configured RestTemplate
+   */
+  @Bean
+  public RestTemplate restTemplate(RestTemplateBuilder builder) {
+    return builder
+        .setConnectTimeout(Duration.ofSeconds(5))
+        .setReadTimeout(Duration.ofSeconds(10))
+        .build();
+  }
 
-    /**
-     * RestClient (Spring 6.1+) — modern fluent alternative to RestTemplate.
-     *
-     * @param restTemplate the underlying RestTemplate to wrap
-     * @return configured RestClient
-     */
-    @Bean
-    public RestClient restClient(RestTemplate restTemplate) {
-        return RestClient.create(restTemplate);
-    }
+  /**
+   * RestClient (Spring 6.1+) — modern fluent alternative to RestTemplate.
+   *
+   * @param restTemplate the underlying RestTemplate to wrap
+   * @return configured RestClient
+   */
+  @Bean
+  public RestClient restClient(RestTemplate restTemplate) {
+    return RestClient.create(restTemplate);
+  }
 
-    /**
-     * WebClient with connection and response timeouts.
-     *
-     * @return configured WebClient
-     */
-    @Bean
-    public WebClient webClient() {
-        var httpClient = HttpClient.create()
-                .responseTimeout(Duration.ofSeconds(10));
+  /**
+   * WebClient with connection and response timeouts.
+   *
+   * @return configured WebClient
+   */
+  @Bean
+  public WebClient webClient() {
+    var httpClient = HttpClient.create().responseTimeout(Duration.ofSeconds(10));
 
-        return WebClient.builder()
-                .clientConnector(new ReactorClientHttpConnector(httpClient))
-                .build();
-    }
+    return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
+  }
 }

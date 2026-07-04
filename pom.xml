@@ -79,6 +79,7 @@
         <pmd-plugin.version>3.22.0</pmd-plugin.version>
         <owasp-dependency-check.version>9.1.0</owasp-dependency-check.version>
         <owasp.failBuildOnCVSS>7</owasp.failBuildOnCVSS>
+        <exec-maven-plugin.version>3.2.0</exec-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -260,6 +261,12 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot.version}</version>
+                </plugin>
+                <!-- Pinned so README `mvn exec:java` commands resolve a reproducible version -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${exec-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.diffplug.spotless</groupId>
