@@ -30,7 +30,7 @@ cd java-enterprise-template
 Verify your tools:
 
 ```bash
-java -version          # 17+ required, 21 recommended
+java -version          # 21+ required
 ./mvnw --version       # Maven wrapper — no global install needed
 docker --version       # Required for integration tests and Docker builds
 ```
@@ -45,13 +45,13 @@ If any command fails, see [Toolchain — Installation](TOOLCHAIN.md#installation
 ./mvnw clean verify
 ```
 
-This compiles all 8 example modules, runs unit tests, and generates coverage reports. On first run, Maven downloads dependencies — expect 3–5 minutes. Subsequent builds are faster.
+This compiles all 9 modules — the `app/` core Spring Boot application (`template-app`) plus the 8 example modules — runs unit tests, and generates coverage reports. On first run, Maven downloads dependencies — expect 3–5 minutes. Subsequent builds are faster.
 
 What just happened:
 
 | Phase | What it does |
 |-------|-------------|
-| `compile` | Compiles all modules (Java 17 source level) |
+| `compile` | Compiles all modules (Java 21 source level) |
 | `test` | Runs unit tests via Surefire |
 | `verify` | Runs JaCoCo coverage checks |
 
@@ -95,23 +95,23 @@ With the server running (from step 3), open a new terminal:
 
 ```bash
 # Create a product
-curl -s -X POST http://localhost:8080/api/products \
+curl -s -X POST http://localhost:8080/api/v1/products \
   -H 'Content-Type: application/json' \
   -d '{"name": "Widget", "price": 9.99}' | jq .
 
 # List all products
-curl -s http://localhost:8080/api/products | jq .
+curl -s http://localhost:8080/api/v1/products | jq .
 
 # Get a specific product (use the ID from the create response)
-curl -s http://localhost:8080/api/products/1 | jq .
+curl -s http://localhost:8080/api/v1/products/1 | jq .
 
 # Update a product
-curl -s -X PUT http://localhost:8080/api/products/1 \
+curl -s -X PUT http://localhost:8080/api/v1/products/1 \
   -H 'Content-Type: application/json' \
   -d '{"name": "Super Widget", "price": 19.99}' | jq .
 
 # Delete a product
-curl -s -X DELETE http://localhost:8080/api/products/1
+curl -s -X DELETE http://localhost:8080/api/v1/products/1
 ```
 
 Stop the server with `Ctrl+C` when done.
@@ -275,7 +275,7 @@ docker build -t java-template-api:latest \
 docker run -p 8080:8080 java-template-api:latest
 
 # Test it
-curl -s http://localhost:8080/api/products | jq .
+curl -s http://localhost:8080/api/v1/products | jq .
 ```
 
 The image uses `eclipse-temurin:21-jre-alpine`, runs as a non-root user, and includes a health check on `/actuator/health`.

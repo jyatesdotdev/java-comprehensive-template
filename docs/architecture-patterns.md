@@ -28,11 +28,16 @@ Comprehensive guide to this template's architecture and enterprise architecture 
 ```
 java-enterprise-template/
 ├── pom.xml                        # Parent POM — dependency & plugin management
-├── checkstyle.xml                 # Checkstyle rules
-├── checkstyle-suppressions.xml    # Checkstyle suppressions
-├── pmd-ruleset.xml                # PMD custom ruleset
-├── spotbugs-exclude.xml           # SpotBugs exclusions
-├── owasp-suppressions.xml         # OWASP dependency-check suppressions
+├── config/                        # Quality tool configuration
+│   ├── checkstyle/
+│   │   ├── checkstyle.xml         # Checkstyle rules
+│   │   └── checkstyle-suppressions.xml  # Checkstyle suppressions
+│   ├── pmd/
+│   │   └── pmd-ruleset.xml        # PMD custom ruleset
+│   ├── spotbugs/
+│   │   └── spotbugs-exclude.xml   # SpotBugs exclusions
+│   └── owasp/
+│       └── owasp-suppressions.xml # OWASP dependency-check suppressions
 ├── .github/workflows/ci.yml       # CI pipeline
 ├── docs/                          # Project documentation
 │   ├── architecture-patterns.md   # ← You are here
@@ -41,6 +46,7 @@ java-enterprise-template/
 │   ├── documentation-standards.md
 │   ├── SECURITY_SCANNING.md
 │   └── third-party-libraries.md
+├── app/                           # Runnable core Spring Boot application (template-app)
 └── examples/                      # Maven sub-modules
     ├── restful-api/               # Spring Boot REST API with OpenAPI
     ├── database/                  # JPA, JDBC, HikariCP, Flyway
@@ -62,6 +68,7 @@ The root `pom.xml` (`com.example.template:java-enterprise-template`) is a `<pack
 
 ```
 java-enterprise-template (parent POM, packaging=pom)
+ ├── app                    (jar, inherits parent — template-app)
  ├── examples/restful-api   (jar, inherits parent)
  ├── examples/database       (jar, inherits parent)
  ├── examples/etl            (jar, inherits parent)

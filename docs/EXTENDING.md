@@ -303,19 +303,19 @@ Run the OWASP dependency check to verify no known vulnerabilities:
 
 ## Adding a Quality Rule or Suppression
 
-The project uses four static analysis tools. Each has a config file at the project root.
+The project uses four static analysis tools. Each has a config file under the `config/` directory.
 
 ### Checkstyle
 
 | File | Purpose |
 |------|---------|
-| `checkstyle.xml` | Rule definitions |
-| `checkstyle-suppressions.xml` | Suppressions for specific files/rules |
+| `config/checkstyle/checkstyle.xml` | Rule definitions |
+| `config/checkstyle/checkstyle-suppressions.xml` | Suppressions for specific files/rules |
 
 **Add a suppression** (e.g., allow long methods in a specific file):
 
 ```xml
-<!-- checkstyle-suppressions.xml -->
+<!-- config/checkstyle/checkstyle-suppressions.xml -->
 <suppress files="MyLegacyClass\.java" checks="MethodLength"/>
 ```
 
@@ -330,7 +330,7 @@ private static final int TIMEOUT = 30;
 
 | File | Purpose |
 |------|---------|
-| `pmd-ruleset.xml` | Rule inclusions/exclusions |
+| `config/pmd/pmd-ruleset.xml` | Rule inclusions/exclusions |
 
 **Exclude a rule globally:**
 
@@ -351,7 +351,7 @@ int x = computeValue();
 
 | File | Purpose |
 |------|---------|
-| `spotbugs-exclude.xml` | Exclusion filter |
+| `config/spotbugs/spotbugs-exclude.xml` | Exclusion filter |
 
 **Suppress a specific bug pattern on a class:**
 
@@ -366,7 +366,7 @@ int x = computeValue();
 
 | File | Purpose |
 |------|---------|
-| `owasp-suppressions.xml` | CVE false-positive suppressions |
+| `config/owasp/owasp-suppressions.xml` | CVE false-positive suppressions |
 
 **Suppress a false-positive CVE:**
 

@@ -26,12 +26,12 @@ Required tools, installation, and IDE setup for the Java Enterprise Template.
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| JDK | 21+ (Temurin recommended) | Build & runtime — source compatibility targets Java 17 |
+| JDK | 21+ (Temurin recommended) | Build & runtime — source compatibility targets Java 21 |
 | Maven | 3.9+ (wrapper included) | Build system — `./mvnw` is provided, no global install needed |
 | Docker | 24+ | Container builds, Testcontainers for integration tests |
 | Git | 2.x | Version control |
 
-The project uses **Java 17 language features** (`maven.compiler.source=17`) but builds and runs on **JDK 21** in CI and Docker. Any JDK ≥ 17 works; JDK 21 is recommended for consistency with CI.
+The project uses **Java 21 language features** (`maven.compiler.source=21` via `<java.version>21</java.version>`) and builds and runs on **JDK 21** in CI and Docker. A JDK ≥ 21 is required; Temurin 21 is recommended for consistency with CI.
 
 ### Quality Tools (Maven-managed)
 
@@ -39,7 +39,7 @@ These run as Maven plugins — no separate installation required:
 
 | Tool | Plugin Version | Purpose |
 |------|---------------|---------|
-| SpotBugs | 4.8.4.0 | Bug detection |
+| SpotBugs | 4.9.8.3 | Bug detection |
 | Find Security Bugs | 1.13.0 | Security-focused static analysis |
 | Checkstyle | 3.3.1 (engine 10.14.2) | Code style enforcement |
 | PMD | 3.22.0 | Static analysis |
@@ -125,7 +125,7 @@ Quick build test:
 2. **Set JDK**: File → Project Structure → Project SDK → select Temurin 21
 3. **Import Maven**: IntelliJ auto-detects the POM. If not, right-click `pom.xml` → "Add as Maven Project"
 4. **Code style**: Install the [Checkstyle-IDEA](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) plugin
-   - Settings → Tools → Checkstyle → add `checkstyle.xml` from the project root
+   - Settings → Tools → Checkstyle → add `config/checkstyle/checkstyle.xml`
 5. **Recommended plugins**:
    - Checkstyle-IDEA — real-time Checkstyle feedback
    - SpotBugs — in-IDE bug detection
@@ -188,15 +188,15 @@ All quality tools are configured in the root `pom.xml` and activated via Maven p
 | `./mvnw verify -Pformat` | Auto-format with Google Java Format |
 | `./mvnw verify -Pintegration-tests` | Run integration tests (Failsafe) |
 
-Configuration files in the project root:
+Configuration files in the `config/` directory:
 
 | File | Tool |
 |------|------|
-| `checkstyle.xml` | Checkstyle rules |
-| `checkstyle-suppressions.xml` | Checkstyle suppressions |
-| `pmd-ruleset.xml` | PMD rules |
-| `spotbugs-exclude.xml` | SpotBugs exclusions |
-| `owasp-suppressions.xml` | OWASP false-positive suppressions |
+| `config/checkstyle/checkstyle.xml` | Checkstyle rules |
+| `config/checkstyle/checkstyle-suppressions.xml` | Checkstyle suppressions |
+| `config/pmd/pmd-ruleset.xml` | PMD rules |
+| `config/spotbugs/spotbugs-exclude.xml` | SpotBugs exclusions |
+| `config/owasp/owasp-suppressions.xml` | OWASP false-positive suppressions |
 
 For detailed usage, suppression guides, and CI integration, see [SECURITY_SCANNING.md](SECURITY_SCANNING.md).
 

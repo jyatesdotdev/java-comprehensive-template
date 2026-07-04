@@ -22,10 +22,10 @@ mvn dependency-check:check
 
 | Tool | Purpose | Config File | Suppression File |
 |------|---------|-------------|------------------|
-| [SpotBugs + Find Security Bugs](#spotbugs--find-security-bugs) | Security bug detection (SQLi, XSS, crypto) | `spotbugs-exclude.xml` | Same file |
-| [Checkstyle](#checkstyle) | Code style + security patterns | `checkstyle.xml` | `checkstyle-suppressions.xml` |
-| [PMD](#pmd) | Static analysis for bugs + security | `pmd-ruleset.xml` | Inline annotations |
-| [OWASP Dependency-Check](#owasp-dependency-check) | CVE scanning of dependencies | pom.xml properties | `owasp-suppressions.xml` |
+| [SpotBugs + Find Security Bugs](#spotbugs--find-security-bugs) | Security bug detection (SQLi, XSS, crypto) | `config/spotbugs/spotbugs-exclude.xml` | Same file |
+| [Checkstyle](#checkstyle) | Code style + security patterns | `config/checkstyle/checkstyle.xml` | `config/checkstyle/checkstyle-suppressions.xml` |
+| [PMD](#pmd) | Static analysis for bugs + security | `config/pmd/pmd-ruleset.xml` | Inline annotations |
+| [OWASP Dependency-Check](#owasp-dependency-check) | CVE scanning of dependencies | pom.xml properties | `config/owasp/owasp-suppressions.xml` |
 | [Trivy](#trivy-container-scanning) | Container image scanning | CI workflow | N/A |
 | [Snyk](#snyk) | Dependency vulnerability scanning | CI workflow | N/A |
 
@@ -73,7 +73,7 @@ mvn spotbugs:gui            # Interactive GUI to browse findings
 
 ### Suppressing False Positives
 
-Edit `spotbugs-exclude.xml` at the project root:
+Edit `config/spotbugs/spotbugs-exclude.xml`:
 
 ```xml
 <!-- Suppress a specific bug in a specific class -->
@@ -146,7 +146,7 @@ String longLine = "this line is exempt from all checks";
 private String non_standard_name;
 ```
 
-**File-level suppression** in `checkstyle-suppressions.xml`:
+**File-level suppression** in `config/checkstyle/checkstyle-suppressions.xml`:
 
 ```xml
 <!-- Relax checks for test classes -->
@@ -194,7 +194,7 @@ String password = getFromVault(); // NOPMD - not a hardcoded credential
 public void complexButNecessary() { ... }
 ```
 
-**Ruleset-level exclusion** in `pmd-ruleset.xml`:
+**Ruleset-level exclusion** in `config/pmd/pmd-ruleset.xml`:
 
 ```xml
 <rule ref="category/java/errorprone.xml">
@@ -249,7 +249,7 @@ mvn dependency-check:check -DnvdApiKey=YOUR_KEY
 
 ### Suppressing False Positives
 
-Edit `owasp-suppressions.xml` at the project root:
+Edit `config/owasp/owasp-suppressions.xml`:
 
 ```xml
 <suppress>
@@ -355,7 +355,7 @@ snyk test --severity-threshold=high
 |------|-----------------|---------|
 | SpotBugs | `<threshold>` in pom.xml (`Low`/`Medium`/`High`) | Low |
 | Checkstyle | `<violationSeverity>` in pom.xml | warning |
-| PMD | Rule properties in `pmd-ruleset.xml` | Per-rule defaults |
+| PMD | Rule properties in `config/pmd/pmd-ruleset.xml` | Per-rule defaults |
 | OWASP | `-Dowasp.failBuildOnCVSS=N` (0–10) | 7 |
 | Trivy | `severity` in CI workflow | CRITICAL,HIGH |
 | Snyk | `--severity-threshold` in CI workflow | high |
@@ -389,11 +389,11 @@ When adding security scanning to an existing project, a phased approach avoids o
 | File | Purpose |
 |------|---------|
 | `pom.xml` | Plugin configuration in `<pluginManagement>`, profiles |
-| `spotbugs-exclude.xml` | SpotBugs false positive exclusions |
-| `checkstyle.xml` | Checkstyle rules |
-| `checkstyle-suppressions.xml` | Checkstyle false positive suppressions |
-| `pmd-ruleset.xml` | PMD rule categories and exclusions |
-| `owasp-suppressions.xml` | OWASP CVE suppressions with justifications |
+| `config/spotbugs/spotbugs-exclude.xml` | SpotBugs false positive exclusions |
+| `config/checkstyle/checkstyle.xml` | Checkstyle rules |
+| `config/checkstyle/checkstyle-suppressions.xml` | Checkstyle false positive suppressions |
+| `config/pmd/pmd-ruleset.xml` | PMD rule categories and exclusions |
+| `config/owasp/owasp-suppressions.xml` | OWASP CVE suppressions with justifications |
 | `.github/workflows/ci.yml` | CI pipeline with security scanning jobs |
 
 

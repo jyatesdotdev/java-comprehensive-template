@@ -136,9 +136,10 @@ Enforces consistent formatting and naming.
     <artifactId>maven-checkstyle-plugin</artifactId>
     <version>3.3.1</version>
     <configuration>
-        <configLocation>google_checks.xml</configLocation>
+        <configLocation>${maven.multiModuleProjectDirectory}/config/checkstyle/checkstyle.xml</configLocation>
+        <suppressionsLocation>${maven.multiModuleProjectDirectory}/config/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
         <violationSeverity>warning</violationSeverity>
-        <failOnViolation>true</failOnViolation>
+        <failsOnError>true</failsOnError>
     </configuration>
 </plugin>
 ```
@@ -175,7 +176,7 @@ Enforces minimum coverage thresholds.
                             <limit>
                                 <counter>LINE</counter>
                                 <value>COVEREDRATIO</value>
-                                <minimum>0.70</minimum>
+                                <minimum>0.80</minimum>
                             </limit>
                         </limits>
                     </rule>
@@ -194,7 +195,7 @@ Run: `./mvnw verify jacoco:report` — report at `target/site/jacoco/index.html`
 <plugin>
     <groupId>org.owasp</groupId>
     <artifactId>dependency-check-maven</artifactId>
-    <version>9.0.10</version>
+    <version>9.1.0</version>
     <configuration>
         <failBuildOnCVSS>7</failBuildOnCVSS>
     </configuration>
@@ -290,7 +291,7 @@ chore(ci): add JaCoCo coverage threshold
 - [ ] Integration tests added for external dependencies
 - [ ] README updated if public API changed
 - [ ] No new SpotBugs/Checkstyle violations
-- [ ] Coverage threshold met (≥70% line coverage)
+- [ ] Coverage threshold met (≥80% line coverage)
 
 ---
 
