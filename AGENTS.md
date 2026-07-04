@@ -1,8 +1,11 @@
 # AGENTS.md — Java Enterprise Template
 
 Guide for AI agents (and humans) working in this repository. Read this file first.
-Every major directory has its own `AGENTS.md` with local rules — read the one for the
-directory you are editing **before** you change anything there.
+AGENTS.md files exist at every level — repo root, each top-level directory, each
+module, and each Java package (main and test). **The nearest AGENTS.md above the file
+you are editing carries the most specific rules; read it, plus the module guide it
+points to, before changing anything.** When you add a package or module, add an
+AGENTS.md with it (short: local rules only, pointer up to the module guide).
 
 ## What this project is
 
