@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") // Spring Boot context-load smoke test
 class ApplicationTest {
 
-    @Test
-    void contextLoads() {
-    }
+  @Test
+  void contextLoads() {}
 }
