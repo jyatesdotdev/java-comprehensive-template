@@ -35,7 +35,7 @@
              Jackson, SLF4J, Logback, JUnit, Mockito, and AssertJ. Do not add
              unused *.version properties for those — bumping them would not
              change the resolved artifacts. -->
-        <spring-boot.version>3.3.5</spring-boot.version>
+        <spring-boot.version>3.5.16</spring-boot.version>
 
         <!-- Apache -->
         <spark.version>3.5.1</spark.version>
