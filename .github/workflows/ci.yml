@@ -32,7 +32,7 @@ jobs:
         run: ./mvnw -B clean verify -DskipITs
 
       - name: Publish Test Results
-        uses: dorny/test-reporter@6c357194179c694acfcad2100dbf27c5b9b0d5e0 # v1.9.1
+        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
         if: always()
         with:
           name: Unit Tests
@@ -58,7 +58,7 @@ jobs:
         run: ./mvnw -B verify -pl examples/testing -Pintegration-tests -Dsurefire.skip=true
 
       - name: Publish Integration Test Results
-        uses: dorny/test-reporter@6c357194179c694acfcad2100dbf27c5b9b0d5e0 # v1.9.1
+        uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
         if: always()
         with:
           name: Integration Tests
