@@ -123,7 +123,7 @@ class ProductControllerTest {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath(JSON_STATUS).value(404))
         .andExpect(jsonPath(JSON_ERROR).value("Not Found"))
-        .andExpect(jsonPath("$.message").value(NOT_FOUND_PREFIX + id))
+        .andExpect(jsonPath(JSON_MESSAGE).value(NOT_FOUND_PREFIX + id))
         .andExpect(jsonPath("$.timestamp").exists());
 
     verify(productService).findById(id);
@@ -152,7 +152,7 @@ class ProductControllerTest {
         .andExpect(status().isInternalServerError())
         .andExpect(jsonPath(JSON_STATUS).value(500))
         .andExpect(jsonPath(JSON_ERROR).value("Internal Server Error"))
-        .andExpect(jsonPath("$.message").value("An unexpected error occurred"));
+        .andExpect(jsonPath(JSON_MESSAGE).value("An unexpected error occurred"));
 
     verify(productService).findAll();
   }
@@ -192,7 +192,7 @@ class ProductControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath(JSON_STATUS).value(400))
         .andExpect(jsonPath(JSON_ERROR).value("Validation Failed"))
-        .andExpect(jsonPath("$.message").value("Request body has invalid fields"))
+        .andExpect(jsonPath(JSON_MESSAGE).value("Request body has invalid fields"))
         .andExpect(jsonPath(JSON_DETAILS, hasItem(NAME_REQUIRED_DETAIL)));
 
     verifyNoInteractions(productService);

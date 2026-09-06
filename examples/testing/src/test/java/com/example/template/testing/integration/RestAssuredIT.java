@@ -58,7 +58,7 @@ class RestAssuredIT {
         .then()
         .statusCode(200)
         .contentType(ContentType.JSON)
-        .body("args.foo", equalTo("bar"))
+        .body("args.foo", hasItem("bar"))
         .body("url", containsString("/get"));
   }
 

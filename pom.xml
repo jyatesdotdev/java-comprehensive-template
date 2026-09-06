@@ -63,8 +63,9 @@
         <!-- Plugins -->
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
-        <!-- -Dsurefire.skip=true skips unit tests only; Failsafe still runs. -->
-        <surefire.skip>false</surefire.skip>
+        <!-- -DskipTests skips Surefire and Failsafe. -Dsurefire.skip=true skips unit tests only. -->
+        <skipTests>false</skipTests>
+        <surefire.skip>${skipTests}</surefire.skip>
         <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
