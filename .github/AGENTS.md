@@ -28,3 +28,5 @@ pipeline, and `dependabot.yml`.
 - SARIF uploads feed the GitHub Security tab — keep the `category` values distinct
   per scanner.
 - `dependabot.yml` covers weekly `maven` (root) and `github-actions` updates.
+  Ignore semver-major (Spring Boot 4, Spark 4, Actions v7, …) and unused parent-DM
+  libraries. Cap open PRs at 3; group Actions patch/minor into one PR.

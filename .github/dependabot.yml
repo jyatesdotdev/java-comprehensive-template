@@ -4,10 +4,30 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 3
+    ignore:
+      # Teaching pins: majors are product decisions, not weekly chores.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Parent DM only — no module depends on these.
+      - dependency-name: "com.google.guava:guava"
+      - dependency-name: "org.apache.commons:commons-collections4"
+      - dependency-name: "org.apache.commons:commons-lang3"
+      - dependency-name: "commons-io:commons-io"
+      - dependency-name: "org.mapstruct:mapstruct"
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 3
+    ignore:
+      # CI pins commit SHAs on current majors (checkout/setup-java v4, etc.).
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      github-actions:
+        patterns: ["*"]
+        update-types:
+          - minor
+          - patch
