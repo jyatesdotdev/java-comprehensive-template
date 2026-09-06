@@ -118,7 +118,7 @@ jobs:
         id: owasp
 
       - name: Upload OWASP SARIF
-        uses: github/codeql-action/upload-sarif@8c78abb9b62512e3c45dea6559ffd924ed8549c8 # v3.28.0
+        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3.28.0
         if: always()
         with:
           sarif_file: target/dependency-check/dependency-check-report.sarif
@@ -169,7 +169,7 @@ jobs:
         id: trivy
 
       - name: Upload Trivy SARIF
-        uses: github/codeql-action/upload-sarif@8c78abb9b62512e3c45dea6559ffd924ed8549c8 # v3.28.0
+        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3.28.0
         if: always()
         with:
           sarif_file: trivy-results.sarif
@@ -205,7 +205,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Snyk SARIF
-        uses: github/codeql-action/upload-sarif@8c78abb9b62512e3c45dea6559ffd924ed8549c8 # v3.28.0
+        uses: github/codeql-action/upload-sarif@48ab28a6f5dbc2a99bf1e0131198dd8f1df78169 # v3.28.0
         if: always() && hashFiles('snyk-results.sarif') != ''
         with:
           sarif_file: snyk-results.sarif
