@@ -72,7 +72,7 @@
         <spotbugs-plugin.version>4.9.8.3</spotbugs-plugin.version>
         <findsecbugs-plugin.version>1.13.0</findsecbugs-plugin.version>
         <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
-        <pmd-plugin.version>3.22.0</pmd-plugin.version>
+        <pmd-plugin.version>3.28.0</pmd-plugin.version>
         <owasp-dependency-check.version>9.1.0</owasp-dependency-check.version>
         <owasp.failBuildOnCVSS>7</owasp.failBuildOnCVSS>
         <exec-maven-plugin.version>3.2.0</exec-maven-plugin.version>
