@@ -103,16 +103,20 @@ public final class DataPipeline<T> {
     for (T item : source) {
       batch.add(item);
       if (batch.size() >= batchSize) {
-        loader.load(batch);
-        total += batch.size();
-        batch.clear();
+        total += deliver(loader, batch);
       }
     }
     if (!batch.isEmpty()) {
-      loader.load(batch);
-      total += batch.size();
+      total += deliver(loader, batch);
     }
     return total;
+  }
+
+  private int deliver(Loader<T> loader, List<T> batch) {
+    List<T> snapshot = List.copyOf(batch);
+    loader.load(snapshot);
+    batch.clear();
+    return snapshot.size();
   }
 
   /**

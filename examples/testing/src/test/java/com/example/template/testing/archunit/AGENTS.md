@@ -4,7 +4,7 @@ Read the test-tree AGENTS.md one level up first.
 
 `ArchitectureRulesTest` — `@AnalyzeClasses(packages = "com.example.template.testing",
 importOptions = DoNotIncludeTests)` with `@ArchTest static final ArchRule` fields.
-Four rules are ENFORCED (they fail `mvn test`, not just review): services don't
+Four rules are ENFORCED (they fail `./mvnw test`, not just review): services don't
 depend on services, repositories don't depend on services, no package cycles, and
 `model` classes must be records.
 

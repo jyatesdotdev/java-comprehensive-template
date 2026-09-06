@@ -2,7 +2,7 @@
 
 Read `examples/database/AGENTS.md` first; testing styles come from `examples/testing/`.
 
-- All 47 tests run on embedded H2 with the **real Flyway migration** — no Docker.
+- All 39 tests run on embedded H2 with the **real Flyway migration** — no Docker.
   Packages mirror main: `entity/` (behavior + lifecycle callbacks called directly —
   they're package-private for exactly this), `service/` (Mockito, every exception
   path), `repository/` (`@DataJpaTest`, one case per query method), `jdbc/`

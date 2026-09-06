@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Fluent target/path/request builder
  *   <li>Generic type handling with {@link GenericType}
  *   <li>Timeout configuration
- *   <li>Response status checking
+ *   <li>Response status checking on every method
  * </ul>
  *
  * <p>Implements {@link AutoCloseable} — use with try-with-resources.
@@ -47,12 +47,23 @@ public class ProductJaxRsClient implements AutoCloseable {
    * @param baseUrl the API base URL (e.g. {@code http://localhost:8080})
    */
   public ProductJaxRsClient(String baseUrl) {
-    this.baseUrl = baseUrl;
-    this.client =
+    this(
+        baseUrl,
         ClientBuilder.newBuilder()
             .connectTimeout(5, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
-            .build();
+            .build());
+  }
+
+  /**
+   * Creates a client around an existing JAX-RS {@link Client} (tests and custom factories).
+   *
+   * @param baseUrl the API base URL
+   * @param client the configured JAX-RS client
+   */
+  ProductJaxRsClient(String baseUrl, Client client) {
+    this.baseUrl = baseUrl;
+    this.client = client;
   }
 
   /**
@@ -61,11 +72,12 @@ public class ProductJaxRsClient implements AutoCloseable {
    * @return list of all products
    */
   public List<ProductResponse> list() {
-    return client
-        .target(baseUrl)
-        .path("api/v1/products")
-        .request(MediaType.APPLICATION_JSON)
-        .get(new GenericType<>() {});
+    try (Response response =
+        client.target(baseUrl).path("api/v1/products").request(MediaType.APPLICATION_JSON).get()) {
+      requireStatus(response, null, 200);
+      List<ProductResponse> body = response.readEntity(new GenericType<>() {});
+      return body == null ? List.of() : body;
+    }
   }
 
   /**
@@ -83,10 +95,7 @@ public class ProductJaxRsClient implements AutoCloseable {
             .resolveTemplate("id", id)
             .request(MediaType.APPLICATION_JSON)
             .get()) {
-
-      if (response.getStatus() == 404) {
-        throw new ResourceNotFoundException("Product not found: " + id);
-      }
+      requireStatus(response, id, 200);
       return response.readEntity(ProductResponse.class);
     }
   }
@@ -104,7 +113,7 @@ public class ProductJaxRsClient implements AutoCloseable {
             .path("api/v1/products")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.json(request))) {
-
+      requireStatus(response, null, 200, 201);
       log.info("Created product, location: {}", response.getLocation());
       return response.readEntity(ProductResponse.class);
     }
@@ -118,12 +127,16 @@ public class ProductJaxRsClient implements AutoCloseable {
    * @return the updated product response
    */
   public ProductResponse update(UUID id, ProductRequest request) {
-    return client
-        .target(baseUrl)
-        .path("api/v1/products/{id}")
-        .resolveTemplate("id", id)
-        .request(MediaType.APPLICATION_JSON)
-        .put(Entity.json(request), ProductResponse.class);
+    try (Response response =
+        client
+            .target(baseUrl)
+            .path("api/v1/products/{id}")
+            .resolveTemplate("id", id)
+            .request(MediaType.APPLICATION_JSON)
+            .put(Entity.json(request))) {
+      requireStatus(response, id, 200);
+      return response.readEntity(ProductResponse.class);
+    }
   }
 
   /**
@@ -140,15 +153,25 @@ public class ProductJaxRsClient implements AutoCloseable {
             .resolveTemplate("id", id)
             .request()
             .delete()) {
-
-      if (response.getStatus() != 204) {
-        throw new ClientException("Delete failed with status: " + response.getStatus());
-      }
+      requireStatus(response, id, 204);
     }
   }
 
   @Override
   public void close() {
     client.close();
+  }
+
+  private static void requireStatus(Response response, UUID id, int... okStatuses) {
+    int status = response.getStatus();
+    for (int ok : okStatuses) {
+      if (status == ok) {
+        return;
+      }
+    }
+    if (status == 404) {
+      throw new ResourceNotFoundException("Product not found: " + id);
+    }
+    throw new ClientException("Request failed with status: " + status);
   }
 }

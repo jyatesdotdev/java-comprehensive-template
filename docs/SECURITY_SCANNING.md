@@ -6,16 +6,16 @@ This project integrates four static analysis and vulnerability scanning tools in
 
 ```bash
 # Full security scan (SpotBugs + Checkstyle + PMD + OWASP Dependency-Check)
-mvn verify -Psecurity-scan
+./mvnw verify -Psecurity-scan
 
 # Quick scan without OWASP (faster, good for local dev)
-mvn verify -Psecurity-scan-quick
+./mvnw verify -Psecurity-scan-quick
 
 # Run individual tools
-mvn spotbugs:check
-mvn checkstyle:check
-mvn pmd:check pmd:cpd-check
-mvn dependency-check:check
+./mvnw spotbugs:check
+./mvnw checkstyle:check
+./mvnw pmd:check pmd:cpd-check
+./mvnw dependency-check:check
 ```
 
 ## Tools Overview
@@ -41,7 +41,7 @@ Runs all four Maven-integrated tools bound to the `verify` phase:
 - OWASP Dependency-Check (`check`)
 
 ```bash
-mvn verify -Psecurity-scan
+./mvnw verify -Psecurity-scan
 ```
 
 ### `security-scan-quick` — Fast Local Scan
@@ -49,7 +49,7 @@ mvn verify -Psecurity-scan
 Same as `security-scan` but without OWASP Dependency-Check. Use this for local development — OWASP can take 5–10+ minutes on first run while it downloads the NVD database.
 
 ```bash
-mvn verify -Psecurity-scan-quick
+./mvnw verify -Psecurity-scan-quick
 ```
 
 ---
@@ -66,9 +66,9 @@ mvn verify -Psecurity-scan-quick
 **Run standalone:**
 
 ```bash
-mvn spotbugs:check          # Fail on findings
-mvn spotbugs:spotbugs       # Generate report only
-mvn spotbugs:gui            # Interactive GUI to browse findings
+./mvnw spotbugs:check          # Fail on findings
+./mvnw spotbugs:spotbugs       # Generate report only
+./mvnw spotbugs:gui            # Interactive GUI to browse findings
 ```
 
 ### Suppressing False Positives
@@ -125,8 +125,8 @@ public void query(String sql) { ... }
 **Run standalone:**
 
 ```bash
-mvn checkstyle:check        # Fail on violations
-mvn checkstyle:checkstyle   # Generate report only
+./mvnw checkstyle:check        # Fail on violations
+./mvnw checkstyle:checkstyle   # Generate report only
 ```
 
 ### Suppressing False Positives
@@ -174,9 +174,9 @@ private String non_standard_name;
 **Run standalone:**
 
 ```bash
-mvn pmd:check               # Fail on violations
-mvn pmd:pmd                 # Generate report only
-mvn pmd:cpd-check           # Fail on copy-paste duplicates
+./mvnw pmd:check               # Fail on violations
+./mvnw pmd:pmd                 # Generate report only
+./mvnw pmd:cpd-check           # Fail on copy-paste duplicates
 ```
 
 ### Suppressing False Positives
@@ -218,19 +218,19 @@ public void complexButNecessary() { ... }
 
 ```bash
 # Standard scan
-mvn dependency-check:check
+./mvnw dependency-check:check
 
 # Multi-module aggregate scan
-mvn dependency-check:aggregate
+./mvnw dependency-check:aggregate
 
 # Critical CVEs only (CVSS ≥ 9)
-mvn dependency-check:check -Dowasp.failBuildOnCVSS=9
+./mvnw dependency-check:check -Dowasp.failBuildOnCVSS=9
 
 # Report-only mode (never fail)
-mvn dependency-check:check -Dowasp.failBuildOnCVSS=11
+./mvnw dependency-check:check -Dowasp.failBuildOnCVSS=11
 
 # With NVD API key (recommended — much faster)
-mvn dependency-check:check -DnvdApiKey=YOUR_KEY
+./mvnw dependency-check:check -DnvdApiKey=YOUR_KEY
 ```
 
 **NVD API Key:** Without an API key, NVD rate-limits requests and scans are significantly slower. Get a free key at https://nvd.nist.gov/developers/request-an-api-key. Pass it via `-DnvdApiKey=KEY` or configure in `~/.m2/settings.xml`:
@@ -292,9 +292,10 @@ build ──┬── integration-tests
 
 | Job | Tools | Trigger | Blocks Deploy |
 |-----|-------|---------|---------------|
-| `quality-gates` | SpotBugs, Checkstyle, PMD (via `-Psecurity-scan-quick`) | All pushes + PRs | Yes |
-| `dependency-scan` | OWASP Dependency-Check | All pushes + PRs | Yes |
-| `container-scan` | Trivy | Main pushes + PRs | Yes |
+| `quality-gates` | Spotless, SpotBugs, Checkstyle, PMD (via `-Psecurity-scan-quick`) | All pushes + PRs to `main`/`develop` | Yes |
+| `integration-tests` | Failsafe + Testcontainers (`-Pintegration-tests`) | All pushes + PRs to `main`/`develop` | Yes (CI gate; `docker` waits on this job) |
+| `dependency-scan` | OWASP Dependency-Check | All pushes + PRs | No (advisory; NVD/token flakiness) |
+| `container-scan` | Trivy | Main pushes + PRs | No (advisory) |
 | `snyk-scan` | Snyk | All pushes + PRs | No (optional) |
 
 ### SARIF / GitHub Security Tab
@@ -364,10 +365,10 @@ To make the build stricter, lower thresholds. To make it more lenient (e.g., dur
 
 ```bash
 # Strictest: fail on any CVE
-mvn verify -Psecurity-scan -Dowasp.failBuildOnCVSS=0
+./mvnw verify -Psecurity-scan -Dowasp.failBuildOnCVSS=0
 
 # Lenient: only critical CVEs fail the build
-mvn verify -Psecurity-scan -Dowasp.failBuildOnCVSS=9
+./mvnw verify -Psecurity-scan -Dowasp.failBuildOnCVSS=9
 ```
 
 ---
@@ -376,7 +377,7 @@ mvn verify -Psecurity-scan -Dowasp.failBuildOnCVSS=9
 
 When adding security scanning to an existing project, a phased approach avoids overwhelming developers:
 
-1. **Week 1:** Run `mvn verify -Psecurity-scan-quick` in report-only mode. Review findings.
+1. **Week 1:** Run `./mvnw verify -Psecurity-scan-quick` in report-only mode. Review findings.
 2. **Week 2:** Fix critical/high findings. Add suppressions for accepted false positives.
 3. **Week 3:** Enable `security-scan-quick` in CI as a required check.
 4. **Week 4:** Enable OWASP Dependency-Check in CI (`dependency-scan` job). Set threshold to 9 (critical only).

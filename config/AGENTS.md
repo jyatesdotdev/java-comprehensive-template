@@ -37,10 +37,12 @@ directory is correct.
   methodReportLevel=15, CognitiveComplexity reportLevel=20. Generated code
   (`**/generated/**`, `**/jmh_generated/**`, `target/`) excluded. Test code scanned.
 - **SpotBugs**: excludes generated code, `SE_BAD_FIELD` on `*Dto`,
-  `CRLF_INJECTION_LOGS` (SLF4J false positive), and a block of style/false-positive
-  patterns for the `com.example.template.*` example packages — including
-  **`PREDICTABLE_RANDOM`**. That last one is fine for simulations/examples but must be
-  **removed or narrowed if this template is used for production security-sensitive code**.
+  `CRLF_INJECTION_LOGS` (SLF4J false positive), and a block of *style* false-positives
+  for `com.example.template.*`. Security-relevant patterns (`PREDICTABLE_RANDOM`,
+  `EI_EXPOSE_REP`/`2`, `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE`,
+  `RV_RETURN_VALUE_IGNORED_BAD_PRACTICE`) are narrowed to the demo packages that
+  need them (`simulation`, `hpc`, `patterns`, plus entity/REST demo packages for
+  representation exposure). Do not restore a repo-wide package match for those.
 - **OWASP**: zero active suppressions; the file is a documented template.
 
 ## Existing suppression patterns (don't re-add these)

@@ -1,9 +1,16 @@
 # ---- Stage 1: Build ----
 FROM eclipse-temurin:21-jdk-alpine AS build
 
-RUN apk add --no-cache maven
+# unzip is required so mvnw keeps the .zip URL and can honor distributionSha256Sum
+# (without unzip, the wrapper switches to .tar.gz but still checks the zip checksum).
+RUN apk add --no-cache unzip
 
 WORKDIR /workspace
+
+# Wrapper first so later layers reuse a pinned Maven 3.9.9 (not apk maven)
+COPY mvnw mvnw.cmd ./
+COPY .mvn .mvn
+RUN chmod +x mvnw
 
 # Copy POMs first for dependency caching
 COPY pom.xml .
@@ -17,11 +24,11 @@ COPY examples/patterns/pom.xml examples/patterns/
 COPY examples/simulation/pom.xml examples/simulation/
 COPY examples/testing/pom.xml examples/testing/
 
-RUN mvn dependency:go-offline -pl app -am -B -q
+RUN ./mvnw dependency:go-offline -pl app -am -B -q
 
 # Copy source and build
 COPY . .
-RUN mvn package -pl app -am -B -q -DskipTests \
+RUN ./mvnw package -pl app -am -B -q -DskipTests \
     && mv app/target/template-app-*.jar /app.jar
 
 # ---- Stage 2: Extract layered jar ----
@@ -38,7 +45,8 @@ LABEL maintainer="team@example.com" \
       org.opencontainers.image.description="Spring Boot application" \
       org.opencontainers.image.source="https://github.com/example/java-enterprise-template"
 
-RUN addgroup -S app && adduser -S app -G app
+RUN apk add --no-cache wget \
+    && addgroup -S app && adduser -S app -G app
 WORKDIR /app
 
 COPY --from=extract /extracted/dependencies/ ./

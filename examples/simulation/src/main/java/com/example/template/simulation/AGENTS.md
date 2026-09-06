@@ -10,8 +10,9 @@ known quirks.
 - Randomness is `ThreadLocalRandom` — required for the parallel paths, never a shared
   `Random`. There is no seeding; determinism comes from deterministic suppliers in
   tests, not seeds.
-- Statistics are accumulated in one pass (Welford) — don't buffer all samples. Results
-  are immutable records.
+- Statistics are accumulated in one pass (Welford mean/variance **and** min/max) —
+  don't buffer all samples or run a second `DoubleStream` of new draws. Results are
+  immutable records.
 - Engines validate input (`schedule` rejects past times with
   `IllegalArgumentException`); derived stats are exposed through accessors that
   self-correct (`busyTime()` closes any in-progress service interval — read through

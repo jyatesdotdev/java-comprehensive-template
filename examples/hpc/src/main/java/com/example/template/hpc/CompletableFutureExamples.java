@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -117,6 +118,10 @@ public final class CompletableFutureExamples {
    * Timeout pattern — completes exceptionally if not done within the deadline. Available since Java
    * 9.
    *
+   * <p>{@code orTimeout} does <em>not</em> cancel {@code operation}; the supplier may keep running
+   * after the future has completed exceptionally. Callers that start blocking work should interrupt
+   * or otherwise stop it (see the unit test latch).
+   *
    * @param <T> the result type
    * @param operation the supplier to execute
    * @param timeout the maximum duration to wait
@@ -161,6 +166,7 @@ public final class CompletableFutureExamples {
       Thread.sleep(millis);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
+      throw new CompletionException(e);
     }
   }
 }

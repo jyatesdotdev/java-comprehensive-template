@@ -1,6 +1,7 @@
 package com.example.template.hpc;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,10 +50,11 @@ public final class ConcurrentCollectionsExamples {
    *
    * @param map the concurrent map to search
    * @param threshold minimum value to match
-   * @return the first key whose value meets the threshold, or {@code null} if none
+   * @return the first key whose value meets the threshold, or empty if none
    */
-  public static String findHighValue(ConcurrentHashMap<String, Long> map, long threshold) {
-    return map.search(1, (key, value) -> value >= threshold ? key : null);
+  public static Optional<String> findHighValue(
+      ConcurrentHashMap<String, Long> map, long threshold) {
+    return Optional.ofNullable(map.search(1, (key, value) -> value >= threshold ? key : null));
   }
 
   // ── Producer-Consumer with BlockingQueue ───────────────────────────
@@ -66,23 +68,40 @@ public final class ConcurrentCollectionsExamples {
   /**
    * Starts a producer thread that enqueues items followed by a poison pill.
    *
+   * <p>If the producer is interrupted it restores the interrupt flag and still offers the poison
+   * pill so {@link #consumeAll} cannot hang.
+   *
    * @param queue the blocking queue to produce into
    * @param items the items to enqueue
+   * @return the started producer thread
    */
-  public static void startProducer(BlockingQueue<String> queue, List<String> items) {
-    Thread.ofPlatform()
-        .name("producer")
-        .start(
-            () -> {
-              try {
-                for (String item : items) {
-                  queue.put(item);
-                }
-                queue.put(POISON_PILL);
-              } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-              }
-            });
+  public static Thread startProducer(BlockingQueue<String> queue, List<String> items) {
+    Thread thread =
+        Thread.ofPlatform()
+            .name("producer")
+            .unstarted(
+                () -> {
+                  try {
+                    for (String item : items) {
+                      queue.put(item);
+                    }
+                    queue.put(POISON_PILL);
+                  } catch (InterruptedException e) {
+                    offerPoisonPill(queue);
+                    Thread.currentThread().interrupt();
+                  }
+                });
+    thread.start();
+    return thread;
+  }
+
+  private static void offerPoisonPill(BlockingQueue<String> queue) {
+    try {
+      queue.put(POISON_PILL);
+    } catch (InterruptedException nested) {
+      Thread.currentThread().interrupt();
+      queue.offer(POISON_PILL);
+    }
   }
 
   /**

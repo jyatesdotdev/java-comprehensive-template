@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -114,6 +115,7 @@ class JUnit5FeaturesTest {
   void csvSourceParams(String name, String email) {
     var user = new User(name, email);
     assertThat(user.name()).isEqualTo(name);
+    assertThat(user.email()).isEqualTo(email);
   }
 
   @ParameterizedTest
@@ -178,7 +180,8 @@ class JUnit5FeaturesTest {
   @Test
   @Tag("slow")
   @DisplayName("Tagged test — run with -Dgroups=slow")
+  @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") // Assumptions.abort is the demo
   void taggedSlowTest() {
-    assertThat(true).isTrue();
+    Assumptions.abort("Showcase @Tag(\"slow\"); filter with -Dgroups=slow.");
   }
 }

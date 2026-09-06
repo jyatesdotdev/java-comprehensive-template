@@ -1,6 +1,6 @@
 # Java Comprehensive Enterprise Template
 
-A production-ready reference template covering best practices, architecture patterns, and working examples for enterprise Java development (Java 17+).
+A production-ready reference template covering best practices, architecture patterns, and working examples for enterprise Java development (Java 21).
 
 ---
 
@@ -45,10 +45,10 @@ A production-ready reference template covering best practices, architecture patt
 ./mvnw test
 
 # Run integration tests (requires Docker)
-./mvnw verify -P integration-tests
+./mvnw verify -pl examples/testing -Pintegration-tests
 
 # Format code
-./mvnw spotless:apply -P format
+./mvnw spotless:apply -Pformat
 ```
 
 ## Project Structure
@@ -61,7 +61,7 @@ A production-ready reference template covering best practices, architecture patt
 │   ├── TOOLCHAIN.md                     # Required tools, install guides, IDE setup
 │   ├── EXTENDING.md                     # Adding modules, endpoints, dependencies
 │   ├── SECURITY_SCANNING.md             # SpotBugs, OWASP, PMD, Checkstyle config
-│   ├── best-practices.md                # Code style, error handling, logging (Java 17+)
+│   ├── best-practices.md                # Code style, error handling, logging (Java 21)
 │   ├── architecture-patterns.md         # Microservices, hexagonal, CQRS, event sourcing
 │   ├── third-party-libraries.md         # Library catalog with usage examples
 │   ├── documentation-standards.md       # JavaDoc, OpenAPI/Swagger, README conventions
@@ -126,7 +126,7 @@ Concurrency patterns using modern Java APIs.
 | `ParallelStreamExamples` | Custom ForkJoinPool, `groupingByConcurrent`, parallel reduction |
 | `CompletableFutureExamples` | Chaining, fan-out/fan-in, error handling, timeouts |
 | `ConcurrentCollectionsExamples` | ConcurrentHashMap, BlockingQueue, LongAdder, Semaphore, StampedLock |
-| `VirtualThreadExamples` | Java 21+ virtual threads (Maven profile exclusion on Java 17) |
+| `VirtualThreadExamples` | Java 21 virtual threads (optional `java17` profile excludes this class on JDK 17) |
 
 Related docs: [Best Practices](docs/best-practices.md) (concurrency), [Architecture Patterns](docs/architecture-patterns.md) (async patterns)
 
@@ -164,7 +164,7 @@ Related docs: [Best Practices](docs/best-practices.md) (performance), [Developme
 
 **Path:** [`examples/patterns/`](examples/patterns/) · **[README](examples/patterns/README.md)**
 
-15 GoF patterns implemented with modern Java 17+ idioms (records, sealed interfaces, pattern matching).
+15 GoF patterns implemented with modern Java idioms (records, sealed interfaces, pattern matching).
 
 | File | Patterns |
 |------|----------|
@@ -216,13 +216,13 @@ Related docs: [Development Workflow](docs/development-workflow.md) (CI/CD, quali
 **[docs/EXTENDING.md](docs/EXTENDING.md)** — Step-by-step guides for adding a new Maven module, REST endpoint, service, third-party dependency, and quality rule/suppression.
 
 ### Best Practices
-**[docs/best-practices.md](docs/best-practices.md)** — 10 sections covering code style, naming conventions, error handling, logging, null safety, records & sealed classes, collections, concurrency, resource management, and general principles. All examples use Java 17+.
+**[docs/best-practices.md](docs/best-practices.md)** — 10 sections covering code style, naming conventions, error handling, logging, null safety, records & sealed classes, collections, concurrency, resource management, and general principles. All examples target Java 21.
 
 ### Architecture Patterns
 **[docs/architecture-patterns.md](docs/architecture-patterns.md)** — Microservices (Spring Boot, WebClient, Kafka, API Gateway, Resilience4j), hexagonal architecture (ports & adapters), CQRS (command/query separation), event sourcing (aggregate replay, event store, snapshots). Includes decision flowchart and anti-patterns.
 
 ### Third-Party Libraries
-**[docs/third-party-libraries.md](docs/third-party-libraries.md)** — Catalog of recommended libraries: Spring ecosystem (6 starters), Apache Commons, Guava, Jackson, Lombok, MapStruct, Resilience4j, logging (SLF4J + Logback), database libs (HikariCP, Flyway, H2), and build plugins. Includes version reference table and selection decision guide.
+**[docs/third-party-libraries.md](docs/third-party-libraries.md)** — Catalog of recommended libraries: Spring ecosystem (6 starters), Apache Commons, Guava, Jackson, logging (SLF4J + Logback), database libs (HikariCP, Flyway, H2), and build plugins. Lombok, MapStruct, and Resilience4j appear as **not-shipped** catalog entries (no matching module dependency). Includes version reference table and selection decision guide.
 
 ### Documentation Standards
 **[docs/documentation-standards.md](docs/documentation-standards.md)** — JavaDoc conventions (tag ordering, class/method/record examples), README templates, OpenAPI/Swagger integration (springdoc-openapi, code-first vs contract-first, OpenAPI Generator), and changelog format.
@@ -237,17 +237,16 @@ Related docs: [Development Workflow](docs/development-workflow.md) (CI/CD, quali
 
 | Requirement | Version |
 |-------------|---------|
-| Java | 17+ (21 recommended for virtual threads) |
+| Java | 21 |
 | Maven | 3.9+ (wrapper included) |
 | Docker | Required for TestContainers and containerized deployment |
 
 ### Java Features Used
 
-- Records and sealed classes (Java 17)
-- Pattern matching for `instanceof` and `switch` (Java 17+)
-- Text blocks (Java 17)
-- Virtual threads (Java 21+, guarded by Maven profile)
-- Sequenced collections (Java 21+, where noted)
+- Records, sealed classes, and text blocks (Java 17 language; required runtime is 21)
+- Pattern matching for `instanceof` and `switch`
+- Virtual threads (Java 21; optional `java17` overlay excludes `VirtualThreadExamples`)
+- Sequenced collections (Java 21, where noted)
 
 ## Coverage Checklist
 

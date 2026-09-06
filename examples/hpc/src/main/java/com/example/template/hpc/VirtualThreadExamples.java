@@ -10,9 +10,9 @@ import java.util.stream.IntStream;
 /**
  * Virtual threads (Project Loom) — requires Java 21+.
  *
- * <p><strong>NOTE:</strong> This file will not compile on Java 17. It is included as a reference
- * for projects targeting Java 21+. To enable, update the root POM's {@code java.version} property
- * to 21.
+ * <p><strong>NOTE:</strong> Requires Java 21 (the root POM already sets {@code java.version} to
+ * 21). The module's optional {@code java17} Maven profile excludes this class when compiling with
+ * JDK 17.
  *
  * <p>Virtual threads are lightweight threads managed by the JVM, ideal for I/O-bound workloads.
  * They allow millions of concurrent tasks without the overhead of platform threads.
@@ -130,6 +130,7 @@ public final class VirtualThreadExamples {
       Thread.sleep(10);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
+      throw new CompletionException(e);
     }
   }
 

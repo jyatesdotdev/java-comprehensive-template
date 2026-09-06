@@ -1,6 +1,7 @@
 package com.example.template.database.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
@@ -80,6 +81,17 @@ class OrderTest {
 
     assertThat(order.getItems()).isEmpty();
     assertThat(order.getTotalAmount()).isEqualByComparingTo(BigDecimal.ZERO);
+  }
+
+  @Test
+  @DisplayName("getItems returns an unmodifiable view so callers must use addItem")
+  void getItemsIsUnmodifiable() {
+    var order = new Order();
+    var item = new OrderItem(WIDGET, 1, BigDecimal.ONE);
+
+    assertThatThrownBy(() -> order.getItems().add(item))
+        .isInstanceOf(UnsupportedOperationException.class);
+    assertThat(order.getItems()).isEmpty();
   }
 
   @Test

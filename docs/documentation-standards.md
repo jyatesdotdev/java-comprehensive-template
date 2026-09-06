@@ -139,7 +139,7 @@ package com.example.template.restfulapi;
 </plugin>
 ```
 
-Generate docs: `mvn javadoc:javadoc` → output in `target/site/apidocs/`.
+Generate docs: `./mvnw javadoc:javadoc` → output in `target/site/apidocs/`.
 
 ---
 
@@ -154,7 +154,7 @@ One-line description of what this project does.
 
 ## Prerequisites
 
-- Java 17+
+- Java 21
 - Maven 3.9+
 - Docker (for integration tests)
 
@@ -163,7 +163,7 @@ One-line description of what this project does.
 ```bash
 git clone https://github.com/org/project.git
 cd project
-mvn clean verify
+./mvnw clean verify
 ```
 
 ## Project Structure
@@ -187,7 +187,7 @@ project/
 
 ```bash
 # Development
-mvn spring-boot:run -pl module-api
+./mvnw spring-boot:run -pl module-api
 
 # Production
 java -jar module-api/target/module-api-1.0.0.jar --spring.profiles.active=prod
@@ -196,8 +196,8 @@ java -jar module-api/target/module-api-1.0.0.jar --spring.profiles.active=prod
 ## Testing
 
 ```bash
-mvn test                          # Unit tests
-mvn verify -P integration-tests   # Integration tests (requires Docker)
+./mvnw test                       # Unit tests
+./mvnw verify -Pintegration-tests   # Integration tests (requires Docker)
 ```
 
 ## API Documentation
@@ -266,7 +266,7 @@ Add to the REST module's `pom.xml`:
 <dependency>
     <groupId>org.springdoc</groupId>
     <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-    <version>2.5.0</version>
+    <!-- version from root dependencyManagement (springdoc.version) -->
 </dependency>
 ```
 
@@ -474,4 +474,4 @@ Use these section headers consistently:
 - [ ] OpenAPI annotations on all REST controllers and DTOs
 - [ ] Swagger UI accessible in development
 - [ ] CHANGELOG.md maintained with each release
-- [ ] `mvn javadoc:javadoc` runs without warnings
+- [ ] `./mvnw javadoc:javadoc` runs without warnings

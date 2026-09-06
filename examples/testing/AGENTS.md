@@ -20,15 +20,15 @@ test:  junit5/JUnit5FeaturesTest        — unit  (surefire)
 
 ## The Test / IT split — how it works mechanically
 
-- This module's pom configures **surefire to exclude `**/*IT.java`** and adds
-  **failsafe** (which runs `*IT.java` at `integration-test`/`verify`).
-- Failsafe activates via the parent's `integration-tests` profile.
+- This module's pom configures **surefire to exclude `**/*IT.java`**.
+- Failsafe is **not** always-on; it is added only by the parent's
+  `integration-tests` profile (so root `./mvnw verify` does not need Docker).
 
 ```bash
-./mvnw -pl examples/testing test                        # unit only, no Docker needed
-./mvnw -pl examples/testing verify -P integration-tests # + ITs (Docker REQUIRED)
+./mvnw -pl examples/testing test                         # unit only, no Docker needed
+./mvnw -pl examples/testing verify -Pintegration-tests   # + ITs (Docker REQUIRED)
 ./mvnw -pl examples/testing test -Dtest=JUnit5FeaturesTest
-./mvnw -pl examples/testing test -Dgroups=slow          # @Tag filtering
+./mvnw -pl examples/testing test -Dgroups=slow           # @Tag filtering
 ```
 
 Name unit tests `*Test`, integration tests `*IT` — the suffix *is* the routing.
@@ -59,8 +59,8 @@ Name unit tests `*Test`, integration tests `*IT` — the suffix *is* the routing
 
 ## Rules and gotchas
 
-- **ITs require a running Docker daemon.** In CI they run in a `continue-on-error`
-  job — do not rely on CI to catch IT regressions; run them locally.
+- **ITs require a running Docker daemon.** CI runs them as a gating
+  `integration-tests` job (`-Pintegration-tests`).
 - AssertJ (`assertThat`) is the assertion style everywhere — not Hamcrest, not bare
   JUnit assertions (REST Assured's embedded Hamcrest matchers are the exception).
 - Test classes get relaxed Checkstyle rules (length/complexity/javadoc) via the shared

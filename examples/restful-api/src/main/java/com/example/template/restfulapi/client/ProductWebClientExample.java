@@ -2,13 +2,17 @@ package com.example.template.restfulapi.client;
 
 import com.example.template.restfulapi.dto.ProductRequest;
 import com.example.template.restfulapi.dto.ProductResponse;
+import com.example.template.restfulapi.exception.ClientException;
 import com.example.template.restfulapi.exception.ResourceNotFoundException;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
 
 /**
  * Non-blocking REST client using Spring WebFlux {@link WebClient}.
@@ -17,8 +21,8 @@ import reactor.core.publisher.Mono;
  *
  * <ul>
  *   <li>Reactive HTTP calls returning {@link Mono} and {@link reactor.core.publisher.Flux}
- *   <li>Error handling with {@code onStatus}
- *   <li>Timeout configuration
+ *   <li>Error handling with {@code onStatus} on every call
+ *   <li>Timeout configuration via Reactor Netty {@code responseTimeout}
  *   <li>Blocking bridge via {@code block()} for interop with imperative code
  * </ul>
  *
@@ -32,19 +36,34 @@ import reactor.core.publisher.Mono;
  */
 public class ProductWebClientExample {
 
+  private static final Duration RESPONSE_TIMEOUT = Duration.ofSeconds(10);
+  private static final Duration BLOCK_TIMEOUT = Duration.ofSeconds(5);
+
   private final WebClient webClient;
 
   /**
-   * Creates a WebClient targeting the given base URL.
+   * Creates a WebClient targeting the given base URL, with a response timeout.
    *
    * @param baseUrl the API base URL (e.g. {@code http://localhost:8080})
    */
   public ProductWebClientExample(String baseUrl) {
-    this.webClient =
+    this(
         WebClient.builder()
             .baseUrl(baseUrl)
             .defaultHeader("Accept", MediaType.APPLICATION_JSON_VALUE)
-            .build();
+            .clientConnector(
+                new ReactorClientHttpConnector(
+                    HttpClient.create().responseTimeout(RESPONSE_TIMEOUT)))
+            .build());
+  }
+
+  /**
+   * Creates a client around an existing {@link WebClient} (tests and custom factories).
+   *
+   * @param webClient the configured WebClient
+   */
+  ProductWebClientExample(WebClient webClient) {
+    this.webClient = webClient;
   }
 
   /**
@@ -53,10 +72,7 @@ public class ProductWebClientExample {
    * @return mono emitting the list of all products
    */
   public Mono<List<ProductResponse>> listReactive() {
-    return webClient
-        .get()
-        .uri("/api/v1/products")
-        .retrieve()
+    return withErrorMapping(webClient.get().uri("/api/v1/products").retrieve(), null)
         .bodyToFlux(ProductResponse.class)
         .collectList();
   }
@@ -68,13 +84,7 @@ public class ProductWebClientExample {
    * @return mono emitting the product response
    */
   public Mono<ProductResponse> getReactive(UUID id) {
-    return webClient
-        .get()
-        .uri("/api/v1/products/{id}", id)
-        .retrieve()
-        .onStatus(
-            status -> status.value() == 404,
-            resp -> Mono.error(new ResourceNotFoundException("Product not found: " + id)))
+    return withErrorMapping(webClient.get().uri("/api/v1/products/{id}", id).retrieve(), id)
         .bodyToMono(ProductResponse.class);
   }
 
@@ -85,12 +95,14 @@ public class ProductWebClientExample {
    * @return mono emitting the created product response
    */
   public Mono<ProductResponse> createReactive(ProductRequest request) {
-    return webClient
-        .post()
-        .uri("/api/v1/products")
-        .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(request)
-        .retrieve()
+    return withErrorMapping(
+            webClient
+                .post()
+                .uri("/api/v1/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .retrieve(),
+            null)
         .bodyToMono(ProductResponse.class);
   }
 
@@ -102,12 +114,14 @@ public class ProductWebClientExample {
    * @return mono emitting the updated product response
    */
   public Mono<ProductResponse> updateReactive(UUID id, ProductRequest request) {
-    return webClient
-        .put()
-        .uri("/api/v1/products/{id}", id)
-        .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(request)
-        .retrieve()
+    return withErrorMapping(
+            webClient
+                .put()
+                .uri("/api/v1/products/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .retrieve(),
+            id)
         .bodyToMono(ProductResponse.class);
   }
 
@@ -118,7 +132,8 @@ public class ProductWebClientExample {
    * @return mono completing when the delete finishes
    */
   public Mono<Void> deleteReactive(UUID id) {
-    return webClient.delete().uri("/api/v1/products/{id}", id).retrieve().bodyToMono(Void.class);
+    return withErrorMapping(webClient.delete().uri("/api/v1/products/{id}", id).retrieve(), id)
+        .bodyToMono(Void.class);
   }
 
   // ── Blocking bridge for imperative code ────────────────────────────
@@ -129,7 +144,8 @@ public class ProductWebClientExample {
    * @return list of all products
    */
   public List<ProductResponse> listBlocking() {
-    return listReactive().block(Duration.ofSeconds(5));
+    List<ProductResponse> body = listReactive().block(BLOCK_TIMEOUT);
+    return body == null ? List.of() : body;
   }
 
   /**
@@ -139,6 +155,22 @@ public class ProductWebClientExample {
    * @return the created product response
    */
   public ProductResponse createBlocking(ProductRequest request) {
-    return createReactive(request).block(Duration.ofSeconds(5));
+    ProductResponse body = createReactive(request).block(BLOCK_TIMEOUT);
+    if (body == null) {
+      throw new ClientException("Empty response when creating product");
+    }
+    return body;
+  }
+
+  private static WebClient.ResponseSpec withErrorMapping(WebClient.ResponseSpec spec, UUID id) {
+    return spec.onStatus(
+            status -> status.value() == 404,
+            resp -> Mono.error(new ResourceNotFoundException("Product not found: " + id)))
+        .onStatus(
+            HttpStatusCode::isError,
+            resp ->
+                Mono.error(
+                    new ClientException(
+                        "Request failed with status: " + resp.statusCode().value())));
   }
 }

@@ -29,20 +29,19 @@ Comprehensive testing examples covering unit, integration, and architectural tes
 
 ```bash
 # Unit tests only (fast, no Docker needed)
-mvn test -pl examples/testing
+./mvnw test -pl examples/testing
 
 # Integration tests (requires Docker)
-mvn verify -pl examples/testing -P integration-tests
+./mvnw verify -pl examples/testing -Pintegration-tests
 
 # Run specific test class
-mvn test -pl examples/testing -Dtest=JUnit5FeaturesTest
+./mvnw test -pl examples/testing -Dtest=JUnit5FeaturesTest
 
 # Run tagged tests
-mvn test -pl examples/testing -Dgroups=slow
-
-# With coverage report (target/site/jacoco/index.html)
-mvn verify -pl examples/testing
+./mvnw test -pl examples/testing -Dgroups=slow
 ```
+
+JaCoCo is skipped in this module (`jacoco.skip=true`). Coverage for the runnable app is at `app/target/site/jacoco/index.html` after `./mvnw -pl app verify`.
 
 ## Frameworks
 
@@ -53,7 +52,7 @@ The standard Java testing framework. Key features demonstrated:
 - **`@DisplayName`** — readable test names in reports
 - **`@Nested`** — group related tests in inner classes
 - **`@ParameterizedTest`** — run same test with different inputs (`@ValueSource`, `@CsvSource`, `@MethodSource`)
-- **`@Tag`** — filter tests by category (`mvn test -Dgroups=slow`)
+- **`@Tag`** — filter tests by category (`./mvnw test -Dgroups=slow`)
 - **`@EnabledOnOs`** — conditional execution
 - **`assertAll`** — grouped assertions that report all failures
 - **`assertTimeout`** — fail if operation exceeds duration
@@ -159,8 +158,8 @@ For modern projects, consider **Playwright** (`com.microsoft.playwright:playwrig
 
 | Pattern | Plugin | When |
 |---------|--------|------|
-| `*Test.java` | Surefire | `mvn test` |
-| `*IT.java` | Failsafe | `mvn verify -P integration-tests` |
+| `*Test.java` | Surefire | `./mvnw test` |
+| `*IT.java` | Failsafe | `./mvnw verify -Pintegration-tests` |
 
 ## Best Practices
 

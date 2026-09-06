@@ -39,12 +39,12 @@ exclusion or a note.
 
 ```bash
 ./mvnw -pl examples/hpc compile
-./mvnw -pl examples/hpc test     # 35 tests, one test class per example class
+./mvnw -pl examples/hpc test     # 36 tests, one test class per example class
 ```
 
 ## Gotchas
 
-- Tests (35) are fully deterministic: futures joined with explicit timeouts
+- Tests (36) are fully deterministic: futures joined with explicit timeouts
   (`get(5, SECONDS)`, AssertJ `succeedsWithin`/`failsWithin`), `CountDownLatch`/
   `CyclicBarrier` coordination, `@Timeout` guards — **never** sleep-based assertions.
   Match that style for anything you add.

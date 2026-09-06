@@ -1,6 +1,5 @@
 package com.example.template.simulation;
 
-import java.util.DoubleSummaryStatistics;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.DoubleSupplier;
 import java.util.stream.DoubleStream;
@@ -27,8 +26,8 @@ public final class MonteCarloSimulation {
    * @param trials number of trials executed
    * @param mean sample mean of trial outcomes
    * @param stddev sample standard deviation
-   * @param min minimum observed value (from a sample)
-   * @param max maximum observed value (from a sample)
+   * @param min minimum observed value from the same trials as {@code mean}
+   * @param max maximum observed value from the same trials as {@code mean}
    */
   public record Result(long trials, double mean, double stddev, double min, double max) {
     /**
@@ -55,32 +54,38 @@ public final class MonteCarloSimulation {
       stream = stream.parallel();
     }
 
-    // Collect mean and variance in a single pass using Welford's algorithm
+    // Single pass: Welford mean/variance plus min/max of the same trials.
     double[] state =
         stream.collect(
-            () -> new double[3], // [count, mean, M2]
+            () -> new double[] {0, 0, 0, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY},
             (s, x) -> {
               s[0]++;
               double delta = x - s[1];
               s[1] += delta / s[0];
               s[2] += delta * (x - s[1]);
+              s[3] = Math.min(s[3], x);
+              s[4] = Math.max(s[4], x);
             },
             (a, b) -> {
+              if (b[0] == 0) {
+                return;
+              }
+              if (a[0] == 0) {
+                System.arraycopy(b, 0, a, 0, 5);
+                return;
+              }
               double count = a[0] + b[0];
               double delta = b[1] - a[1];
               a[1] = (a[0] * a[1] + b[0] * b[1]) / count;
               a[2] += b[2] + delta * delta * a[0] * b[0] / count;
+              a[3] = Math.min(a[3], b[3]);
+              a[4] = Math.max(a[4], b[4]);
               a[0] = count;
             });
 
     double mean = state[1];
     double variance = state[0] > 1 ? state[2] / (state[0] - 1) : 0.0;
-
-    // Second pass for min/max (cheap relative to the trial computation)
-    DoubleSummaryStatistics stats =
-        DoubleStream.generate(trial).limit(Math.min(trials, 10_000)).summaryStatistics();
-
-    return new Result(trials, mean, Math.sqrt(variance), stats.getMin(), stats.getMax());
+    return new Result(trials, mean, Math.sqrt(variance), state[3], state[4]);
   }
 
   // ── Example Trials ──────────────────────────────────────────────────

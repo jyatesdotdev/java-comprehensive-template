@@ -6,7 +6,6 @@ import com.example.template.database.entity.Order;
 import com.example.template.database.entity.OrderItem;
 import com.example.template.database.entity.OrderStatus;
 import java.math.BigDecimal;
-import org.hibernate.Hibernate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,8 +109,8 @@ class OrderRepositoryTest {
     entityManager.clear();
 
     Order fetched = repository.findByIdWithItems(id).orElseThrow();
+    entityManager.clear();
 
-    assertThat(Hibernate.isInitialized(fetched.getItems())).isTrue();
     assertThat(fetched.getItems())
         .extracting(OrderItem::getProductName)
         .containsExactlyInAnyOrder("Widget", "Gadget");
@@ -157,14 +156,14 @@ class OrderRepositoryTest {
     persistOrder(CAROL, OrderStatus.SHIPPED);
 
     int updated = repository.bulkUpdateStatus(OrderStatus.PENDING, OrderStatus.CONFIRMED);
-    // Bulk JPQL bypasses the persistence context — clear it before re-reading.
-    entityManager.clear();
 
     assertThat(updated).isEqualTo(2);
     assertThat(repository.findByStatus(OrderStatus.PENDING)).isEmpty();
     assertThat(repository.findByStatus(OrderStatus.CONFIRMED))
         .extracting(Order::getCustomerName)
         .containsExactlyInAnyOrder(ALICE, BOB);
+    assertThat(repository.findByStatus(OrderStatus.CONFIRMED))
+        .allSatisfy(order -> assertThat(order.getUpdatedAt()).isNotNull());
     assertThat(repository.findByStatus(OrderStatus.SHIPPED)).hasSize(1);
   }
 

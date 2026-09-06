@@ -14,14 +14,14 @@ that also runs as a server).
 
 | Module | Demonstrates | Runnable? | Unit tests | Needs Docker? |
 |--------|--------------|-----------|------------|---------------|
-| `restful-api/` | Spring Boot REST server + 3 HTTP client styles, OpenAPI, global error handling | `spring-boot:run` on :8080 | 39 (controller, service, mapper, DTO, clients) | only for its Dockerfile |
-| `database/` | JPA/Hibernate entities, Spring Data, transactions, raw JDBC, Flyway, HikariCP | Spring Boot app (H2 in-memory) | 47 (entities, service, `@DataJpaTest`, `@JdbcTest`) | no (H2) |
-| `hpc/` | Parallel streams, CompletableFuture, concurrent collections, virtual threads | no (static utility methods) | 35 | no |
-| `etl/` | Spark RDD/DataFrame/SQL, Spring Batch chunk job, pure-Java pipeline | no main class | 17 (pipeline + batch beans; Spark untested) | no |
+| `restful-api/` | Spring Boot REST server + 3 HTTP client styles, OpenAPI, global error handling | `spring-boot:run` on :8080 | 45 (controller, service, mapper, DTO, clients, context) | only for its Dockerfile |
+| `database/` | JPA/Hibernate entities, Spring Data, transactions, raw JDBC, Flyway, HikariCP | Spring Boot app (H2 in-memory) | 39 (entities, service, `@DataJpaTest`, `@JdbcTest`) | no (H2) |
+| `hpc/` | Parallel streams, CompletableFuture, concurrent collections, virtual threads | no (static utility methods) | 36 | no |
+| `etl/` | Spark RDD/DataFrame/SQL, Spring Batch chunk job, pure-Java pipeline | no main class | 18 (pipeline + batch beans; Spark untested) | no |
 | `systems/` | JNI with fallback, off-heap memory, JMH benchmarks, MXBean profiling | `PerformanceBenchmarks#main` | 14 | no |
-| `patterns/` | 15 GoF patterns in modern Java (records, sealed, switch matching) | no | 58 (one `@Nested` class per pattern) | no |
+| `patterns/` | 15 GoF patterns in modern Java (records, sealed, switch matching) | no | 59 (one `@Nested` class per pattern) | no |
 | `simulation/` | Monte Carlo (Welford's variance), discrete-event simulation (M/M/1) | both classes have `main` | 15 (statistical tolerance + deterministic engine) | no |
-| `testing/` | **The reference for how to test**: JUnit 5, Mockito, Testcontainers, REST Assured, ArchUnit | tests are the content | 31 unit + 8 `*IT` | yes, for `*IT` |
+| `testing/` | **The reference for how to test**: JUnit 5, Mockito, Testcontainers, REST Assured, ArchUnit | tests are the content | 18 unit + 8 IT methods in 2 classes | yes, for `*IT` |
 
 ## Traits shared by every example module
 
@@ -31,8 +31,8 @@ that also runs as a server).
   test sources. Example-code rule friction is handled with *narrow, commented*
   `@SuppressWarnings("PMD.X") // Example code: reason` annotations — follow that style.
 - Common test deps (JUnit 5, AssertJ, Mockito, SLF4J) are inherited; only
-  module-specific deps are declared, version-less (managed by the root pom). The few
-  hard-pinned versions (Jersey in restful-api, JMH) are called out in module guides.
+  module-specific deps are declared, version-less (managed by the root pom).
+  Jersey, springdoc, and JMH versions live in root `dependencyManagement`.
 - Empty `src/{main,test}/{java,resources}` dirs are kept with `.gitkeep` — leave them.
 - Every module has a `README.md` (human walkthrough) and an `AGENTS.md` (agent rules).
 
@@ -62,8 +62,8 @@ Full recipe: `docs/EXTENDING.md`.
 
 ## Testing expectations
 
-Every module now ships a real unit-test suite (counts in the table above; ~258 unit
-tests repo-wide). Keep it that way: **new behavior lands with tests in the same
+Every module now ships a real unit-test suite (counts in the table above; 246 unit
+`@Test` methods repo-wide including `app`, plus 8 IT methods). Keep it that way: **new behavior lands with tests in the same
 change**, in the styles demonstrated by `examples/testing/` and each module's existing
 suite. Known intentional gap: Spark code in `etl/` is untested (JVM-heavy); the
 surefire `--add-opens` argLine is already in place if you add a `local[*]` test.

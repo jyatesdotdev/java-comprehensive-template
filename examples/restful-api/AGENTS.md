@@ -14,8 +14,8 @@ domain/       Product — mutable entity, NEVER exposed over HTTP
 dto/          ProductRequest / ProductResponse / ErrorResponse — immutable records
 mapper/       ProductMapper — final class, static methods, entity ↔ DTO boundary
 exception/    ResourceNotFoundException, ClientException, GlobalExceptionHandler
-config/       OpenApiConfig, RestClientConfig
-client/       Three standalone HTTP client demos (not wired into the server)
+config/       OpenApiConfig
+client/       Three standalone HTTP client demos + RestClientConfig (not wired into the server)
 ```
 
 Rules encoded here — keep them when extending:
@@ -64,10 +64,13 @@ beans exist but nothing injects the client classes. Treat them as copyable demos
   is a dependency for exactly that reason — don't remove it. The Dockerfile expects a
   prebuilt jar: run `./mvnw -pl examples/restful-api -am package` before `docker build`.
 - CI's `container-scan` and `docker` jobs build **this** module's Dockerfile.
-- Jersey deps are hard-pinned to `3.1.5` in this pom (not parent-managed) — bump all
-  three (`jersey-client`, `jersey-hk2`, `jersey-media-json-jackson`) together.
-- `jacoco.skip=true`. Tests (39): `ProductControllerTest` (`@WebMvcTest` + `@MockBean`,
-  including validation-400 and 404-handler paths), `InMemoryProductServiceTest`,
-  `ProductMapperTest`, `ErrorResponseTest`, `ProductClientExceptionTest`. Extend these
-  when you touch the corresponding layer; `updateEntity` is a **full overwrite** (a
-  null description clears the stored value) and a test pins that.
+- Jersey and springdoc versions live in the **root** pom (`jersey.version`,
+  `springdoc.version`) — declare them version-less here. Bump all three Jersey
+  artifacts together.
+- `jacoco.skip=true`. Tests (45 `@Test` methods): `ProductControllerTest` (`@WebMvcTest`
+  + `@MockBean`, including validation-400, 404-handler, bad UUID / malformed JSON),
+  `InMemoryProductServiceTest`, `ProductMapperTest`, `ErrorResponseTest`,
+  `ProductClientExceptionTest`, `RestApiApplicationTest` (context load). ArchUnit rules
+  live in `archunit/` (`@ArchTest` fields, not `@Test`). Extend these when you touch
+  the corresponding layer; `updateEntity` is a **full overwrite** (a null description
+  clears the stored value) and a test pins that.

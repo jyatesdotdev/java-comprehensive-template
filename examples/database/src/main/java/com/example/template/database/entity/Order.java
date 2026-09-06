@@ -16,6 +16,7 @@ import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -122,8 +123,14 @@ public class Order {
     this.status = status;
   }
 
+  /**
+   * Returns an unmodifiable view of the items. Use {@link #addItem} and {@link #removeItem} to
+   * mutate the collection so totals stay consistent.
+   *
+   * @return unmodifiable list of order items
+   */
   public List<OrderItem> getItems() {
-    return items;
+    return Collections.unmodifiableList(items);
   }
 
   public BigDecimal getTotalAmount() {

@@ -1,6 +1,12 @@
 # Third-Party Libraries Guide
 
-A curated reference of libraries used in this template, with usage examples and guidance on when to reach for each one. All versions are managed in the root `pom.xml` `<properties>` block.
+A curated catalog of libraries for enterprise Java. **Shipped here** means a matching
+dependency exists in this reactor. Sections marked **not shipped** are common choices
+with copy-paste snippets only — they are not dependencies of this repository.
+
+Versions that this reactor interpolates live in the root `pom.xml` `<properties>`
+block. Hibernate, Jackson, JUnit, Mockito, AssertJ, Flyway, HikariCP, H2, PostgreSQL,
+SLF4J, and Logback are **not** listed there: the Spring Boot BOM pins them.
 
 ---
 
@@ -107,6 +113,9 @@ public record CreateItemRequest(
 
 ### Spring Boot Starter Security
 
+**Not shipped.** This snippet is a common enterprise choice; there is no
+`spring-boot-starter-security` (or OAuth2) dependency in this repository.
+
 Authentication, authorization, CSRF, CORS.
 
 ```java
@@ -128,7 +137,9 @@ public class SecurityConfig {
 
 ### Spring Boot Starter Actuator
 
-Health checks, metrics, info endpoints for production monitoring.
+Health checks, metrics, info endpoints for production monitoring. `app` and
+`examples/restful-api` depend on actuator for `/actuator/health`. The prometheus
+exposure shown below is **not** configured in this repo's `application.yml` files.
 
 ```yaml
 management:
@@ -371,6 +382,9 @@ public class JacksonConfig {
 
 ## 5. Lombok
 
+**Not shipped.** This repository does not depend on Lombok; examples use records and
+hand-written constructors instead.
+
 Compile-time code generation to reduce boilerplate. **Use sparingly** — Java records and modern IDE features reduce the need.
 
 ### Maven Setup
@@ -433,6 +447,11 @@ public class OrderProcessor {
 ---
 
 ## 6. MapStruct (`1.5.5.Final`)
+
+**Managed but unused.** Parent `dependencyManagement` lists MapStruct; no module
+runs the annotation processor. `examples/restful-api` maps with a handwritten
+`ProductMapper` static class. Reach for MapStruct when you have many entity↔DTO
+conversions; do not treat the DM entry as “this template uses MapStruct.”
 
 Compile-time bean mapping — generates type-safe, zero-reflection mapping code.
 
@@ -502,6 +521,8 @@ public class OrderService {
 ---
 
 ## 7. Resilience4j
+
+**Not shipped.** There is no Resilience4j dependency in this repository.
 
 Fault tolerance library for microservices — circuit breaker, retry, rate limiter, bulkhead.
 
@@ -645,11 +666,11 @@ V3__add_audit_columns.sql
 | Plugin | Purpose | Activation |
 |--------|---------|------------|
 | `maven-compiler-plugin` | Compile with `-parameters` for Spring | Always |
-| `maven-surefire-plugin` | Unit tests (`*Test.java`) | `mvn test` |
-| `maven-failsafe-plugin` | Integration tests (`*IT.java`) | `mvn verify -Pintegration-tests` |
-| `jacoco-maven-plugin` | Code coverage reports | `mvn verify` → `target/site/jacoco/` |
-| `spotless-maven-plugin` | Google Java Format | `mvn spotless:apply -Pformat` |
-| `spotbugs-maven-plugin` | Static bug detection | `mvn spotbugs:check` |
+| `maven-surefire-plugin` | Unit tests (`*Test.java`) | `./mvnw test` |
+| `maven-failsafe-plugin` | Integration tests (`*IT.java`) | `./mvnw verify -Pintegration-tests` |
+| `jacoco-maven-plugin` | Code coverage reports | `./mvnw verify` → `app/target/site/jacoco/` |
+| `spotless-maven-plugin` | Google Java Format | `./mvnw spotless:apply -Pformat` |
+| `spotbugs-maven-plugin` | Static bug detection | `./mvnw verify -Psecurity-scan-quick -DskipTests` |
 
 ### Adding SpotBugs
 
@@ -660,7 +681,7 @@ V3__add_audit_columns.sql
     <version>${spotbugs-plugin.version}</version>
     <configuration>
         <effort>Max</effort>
-        <threshold>Medium</threshold>
+        <threshold>Low</threshold>
     </configuration>
 </plugin>
 ```
@@ -680,7 +701,7 @@ V3__add_audit_columns.sql
 
 ### "Do I need Guava?"
 
-Modern Java (17+) covers many former Guava use cases:
+Modern Java 21 covers many former Guava use cases:
 - `List.of()`, `Map.of()` → immutable collections
 - `Objects.requireNonNull()` → null checks
 - `String.isBlank()` → blank checks
@@ -702,29 +723,22 @@ Use MapStruct when you have many entity↔DTO conversions with consistent patter
 
 | Library | Property | Version |
 |---------|----------|---------|
-| Spring Boot | `spring-boot.version` | 3.3.5 |
-| Hibernate | `hibernate.version` | 6.4.4.Final |
-| Flyway | `flyway.version` | 10.10.0 |
-| HikariCP | `hikaricp.version` | 5.1.0 |
-| H2 | `h2.version` | 2.2.224 |
-| PostgreSQL Driver | `postgresql.version` | 42.7.3 |
+| Spring Boot BOM | `spring-boot.version` | 3.3.5 |
+| Hibernate, Flyway, HikariCP, H2, PostgreSQL, Jackson, SLF4J, Logback, JUnit 5, Mockito, AssertJ | *(Boot BOM)* | managed by `spring-boot-dependencies` |
 | Apache Spark | `spark.version` | 3.5.1 |
 | Commons Lang3 | `commons-lang3.version` | 3.14.0 |
 | Commons IO | `commons-io.version` | 2.16.1 |
 | Commons Collections4 | `commons-collections4.version` | 4.4 |
 | Guava | `guava.version` | 33.1.0-jre |
-| Jackson | `jackson.version` | 2.17.0 |
 | MapStruct | `mapstruct.version` | 1.5.5.Final |
-| SLF4J | `slf4j.version` | 2.0.12 |
-| Logback | `logback.version` | 1.5.3 |
-| JUnit 5 | `junit-jupiter.version` | 5.10.2 |
-| Mockito | `mockito.version` | 5.11.0 |
-| AssertJ | `assertj.version` | 3.25.3 |
+| Jersey JAX-RS | `jersey.version` | 3.1.5 |
+| springdoc-openapi | `springdoc.version` | 2.5.0 |
+| JMH | `jmh.version` | 1.37 |
 | TestContainers | `testcontainers.version` | 1.19.7 |
 | REST Assured | `rest-assured.version` | 5.4.0 |
 | ArchUnit | `archunit.version` | 1.2.1 |
 
-All versions are centralized in the root `pom.xml` `<properties>` block. Child modules inherit versions through `<dependencyManagement>` — never hardcode versions in submodules.
+Root `pom.xml` `<properties>` only lists versions this reactor actually interpolates. Hibernate/Jackson/JUnit/etc. come from the Spring Boot BOM — unused `*.version` properties were removed so bumping them cannot silently do nothing. Child modules inherit versions through `<dependencyManagement>` and must not hardcode versions.
 
 
 ---

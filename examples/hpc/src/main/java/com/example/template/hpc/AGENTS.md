@@ -7,10 +7,11 @@ Read `examples/hpc/AGENTS.md` first — it maps all four classes and the Java-ve
   no `System.out`.
 - Non-negotiable concurrency conventions demonstrated here and required of additions:
   restore the interrupt flag on `InterruptedException`
-  (`Thread.currentThread().interrupt()`); wrap checked async failures in
-  `CompletionException`; custom `ForkJoinPool`s in try-with-resources; shared state
-  only via concurrent types (`ConcurrentHashMap`, `LongAdder`, `Semaphore`,
-  `StampedLock`).
+  (`Thread.currentThread().interrupt()`) and do not fall through as success — wrap in
+  `CompletionException`; poison-pill producers must still enqueue the pill after
+  interrupt; `orTimeout` does not cancel the supplier; custom `ForkJoinPool`s in
+  try-with-resources; shared state only via concurrent types (`ConcurrentHashMap`,
+  `LongAdder`, `Semaphore`, `StampedLock`). `findHighValue` returns `Optional`.
 - Locale-sensitive formatting uses `String.format(Locale.ROOT, ...)`.
 - Java-21-only APIs stay inside `VirtualThreadExamples` (the pom's `java17` profile
   excludes that one file on older JDKs); `StructuredTaskScope` remains javadoc-only

@@ -38,11 +38,18 @@ import org.springframework.transaction.PlatformTransactionManager;
  *
  * <pre>
  * &#64;SpringBootApplication
- * &#64;EnableBatchProcessing
- * public class BatchApp { public static void main(String[] args) {
- * SpringApplication.run(BatchApp.class, args);
- * } }
+ * public class BatchApp {
+ *   public static void main(String[] args) throws Exception {
+ *     var ctx = SpringApplication.run(BatchApp.class, args);
+ *     JobLauncher launcher = ctx.getBean(JobLauncher.class);
+ *     Job job = ctx.getBean("csvToJsonJob", Job.class);
+ *     launcher.run(job, new JobParameters());
+ *   }
+ * }
  * </pre>
+ *
+ * <p>Do not add {@code @EnableBatchProcessing} on Spring Boot 3.3 — it disables Boot's Batch
+ * auto-configuration.
  */
 @Configuration
 public class CsvToJsonBatchConfig {

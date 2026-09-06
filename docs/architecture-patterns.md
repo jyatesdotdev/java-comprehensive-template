@@ -1,6 +1,6 @@
 # Architecture Patterns
 
-Comprehensive guide to this template's architecture and enterprise architecture patterns with Java 17+ examples.
+Comprehensive guide to this template's architecture and enterprise architecture patterns with Java 21 examples.
 
 ---
 
@@ -90,10 +90,10 @@ Each child module's `pom.xml` references the parent:
 </parent>
 ```
 
-Building from the root (`mvn verify`) compiles and tests all modules. Build a single module with:
+Building from the root (`./mvnw verify -DskipITs`) compiles and tests all modules. Build a single module with:
 
 ```bash
-mvn verify -pl examples/restful-api
+./mvnw verify -pl examples/restful-api
 ```
 
 ### Package Hierarchy
@@ -102,6 +102,7 @@ All modules share the base package `com.example.template`:
 
 | Module | Base Package | Purpose |
 |--------|-------------|---------|
+| app | `com.example.template` | Runnable Spring Boot entry point (`Application`) |
 | restful-api | `com.example.template.restfulapi` | REST controllers, DTOs, services, clients |
 | database | `com.example.template.database` | Entities, repositories, JDBC, config |
 | etl | `com.example.template.etl` | Pipelines, batch config, Spark |

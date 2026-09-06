@@ -121,6 +121,10 @@ public class ProductController {
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Product updated"),
     @ApiResponse(
+        responseCode = "400",
+        description = "Validation error",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+    @ApiResponse(
         responseCode = "404",
         description = "Product not found",
         content = @Content(schema = @Schema(implementation = ErrorResponse.class)))

@@ -168,6 +168,7 @@ class CreationalPatternsTest {
 
     private static final String SUBJECT = "Welcome";
     private static final String BODY = "Hello!";
+    private static final String NEWS = "news";
 
     @Test
     @DisplayName("template creates a prototype with empty recipient and no tags")
@@ -197,12 +198,12 @@ class CreationalPatternsTest {
     @Test
     @DisplayName("withTag appends without mutating the original")
     void withTagAppends() {
-      Notification original = new Notification("bob@example.com", "S", "B", List.of("news"));
+      Notification original = new Notification("bob@example.com", "S", "B", List.of(NEWS));
 
       Notification tagged = original.withTag("urgent");
 
-      assertThat(tagged.tags()).containsExactly("news", "urgent");
-      assertThat(original.tags()).containsExactly("news");
+      assertThat(tagged.tags()).containsExactly(NEWS, "urgent");
+      assertThat(original.tags()).containsExactly(NEWS);
     }
 
     @Test
@@ -212,6 +213,18 @@ class CreationalPatternsTest {
 
       assertThatThrownBy(() -> tagged.tags().add("two"))
           .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    @DisplayName("compact constructor copies caller-owned tag lists")
+    void compactConstructorCopiesTags() {
+      var mutableTags = new java.util.ArrayList<String>();
+      mutableTags.add(NEWS);
+
+      Notification notification = new Notification("a@b.c", "S", "B", mutableTags);
+      mutableTags.add("injected");
+
+      assertThat(notification.tags()).containsExactly(NEWS);
     }
   }
 

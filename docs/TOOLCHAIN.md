@@ -136,15 +136,13 @@ Quick build test:
 
 1. **Required extension**: [Extension Pack for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) (includes Language Support, Debugger, Maven, Test Runner)
 2. **Open project**: File → Open Folder → select the project root
-3. **Recommended extensions** (add to `.vscode/extensions.json`):
+3. **Recommended extensions** — committed at `.vscode/extensions.json`:
    ```json
    {
      "recommendations": [
        "vscjava.vscode-java-pack",
-       "vscjava.vscode-maven",
-       "vmware.vscode-spring-boot",
-       "redhat.java",
-       "SonarSource.sonarlint-vscode"
+       "shengchen.vscode-checkstyle",
+       "adamvoss.vscode-pmd"
      ]
    }
    ```
@@ -163,15 +161,15 @@ Quick build test:
 The project includes a Maven Wrapper (`mvnw` / `mvnw.cmd`), so a global Maven install is optional. Always use the wrapper to ensure consistent Maven versions:
 
 ```bash
-./mvnw clean verify              # Build + unit tests
+./mvnw clean verify              # Build + unit tests (no Docker ITs)
 ./mvnw verify -Psecurity-scan    # Full quality + security scan
-./mvnw verify -Pformat           # Auto-format code with Spotless
+./mvnw spotless:apply -Pformat   # Auto-format code with Spotless
 ```
 
 If you need to update the wrapper version:
 
 ```bash
-mvn wrapper:wrapper -Dmaven=3.9.9
+./mvnw wrapper:wrapper -Dmaven=3.9.9
 ```
 
 ---
@@ -182,11 +180,12 @@ All quality tools are configured in the root `pom.xml` and activated via Maven p
 
 | Command | What it runs |
 |---------|-------------|
-| `./mvnw verify` | Compile + unit tests + JaCoCo coverage |
+| `./mvnw verify` | Compile + unit tests + JaCoCo coverage (`app` only) |
 | `./mvnw verify -Psecurity-scan-quick` | + SpotBugs + Checkstyle + PMD |
 | `./mvnw verify -Psecurity-scan` | + all above + OWASP Dependency-Check |
-| `./mvnw verify -Pformat` | Auto-format with Google Java Format |
-| `./mvnw verify -Pintegration-tests` | Run integration tests (Failsafe) |
+| `./mvnw spotless:apply -Pformat` | Auto-format with Google Java Format |
+| `./mvnw spotless:check` | CI format gate (does not need `-Pformat`) |
+| `./mvnw verify -Pintegration-tests` | Run integration tests (Failsafe; needs Docker) |
 
 Configuration files in the `config/` directory:
 

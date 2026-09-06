@@ -47,6 +47,7 @@ class ProductControllerTest {
   private static final String NAME_REQUIRED_DETAIL = "name: Name is required";
   private static final String JSON_STATUS = "$.status";
   private static final String JSON_ERROR = "$.error";
+  private static final String JSON_MESSAGE = "$.message";
   private static final String JSON_DETAILS = "$.details";
 
   @Autowired private MockMvc mockMvc;
@@ -128,6 +129,34 @@ class ProductControllerTest {
     verify(productService).findById(id);
   }
 
+  @Test
+  @DisplayName("GET /api/v1/products/{id} returns 400 when the id is not a UUID")
+  void getShouldReturn400WhenIdIsNotUuid() throws Exception {
+    mockMvc
+        .perform(get(BASE_PATH + "/not-a-uuid"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath(JSON_STATUS).value(400))
+        .andExpect(jsonPath(JSON_ERROR).value("Bad Request"))
+        .andExpect(jsonPath(JSON_MESSAGE).value("Invalid value for parameter id"));
+
+    verifyNoInteractions(productService);
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/products returns 500 ErrorResponse when the service fails")
+  void listShouldReturn500WhenServiceThrows() throws Exception {
+    when(productService.findAll()).thenThrow(new IllegalStateException("boom"));
+
+    mockMvc
+        .perform(get(BASE_PATH))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath(JSON_STATUS).value(500))
+        .andExpect(jsonPath(JSON_ERROR).value("Internal Server Error"))
+        .andExpect(jsonPath("$.message").value("An unexpected error occurred"));
+
+    verify(productService).findAll();
+  }
+
   // ── POST ───────────────────────────────────────────────────────────
 
   @Test
@@ -205,6 +234,18 @@ class ProductControllerTest {
             .getContentAsString();
 
     assertThat(responseBody).contains(NAME_REQUIRED_DETAIL).contains("price:");
+    verifyNoInteractions(productService);
+  }
+
+  @Test
+  @DisplayName("POST with malformed JSON returns 400, not 500")
+  void createShouldReturn400WhenJsonIsMalformed() throws Exception {
+    mockMvc
+        .perform(post(BASE_PATH).contentType(MediaType.APPLICATION_JSON).content("{"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath(JSON_STATUS).value(400))
+        .andExpect(jsonPath(JSON_ERROR).value("Malformed JSON"));
+
     verifyNoInteractions(productService);
   }
 

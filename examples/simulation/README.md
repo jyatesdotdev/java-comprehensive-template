@@ -1,6 +1,6 @@
 # Simulation Examples
 
-Monte Carlo and discrete event simulation patterns in pure Java 17+.
+Monte Carlo and discrete event simulation patterns in pure Java 21.
 
 ## Contents
 

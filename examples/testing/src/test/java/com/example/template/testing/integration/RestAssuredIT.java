@@ -21,9 +21,9 @@ import org.testcontainers.utility.DockerImageName;
  * <p>Demonstrates: GET/POST requests, JSON path assertions, status code checks, content type
  * validation, and request/response logging.
  *
- * <p>Run with: {@code mvn verify -pl examples/testing -P integration-tests}
+ * <p>Run with: {@code ./mvnw verify -pl examples/testing -Pintegration-tests}
  */
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @DisplayName("REST Assured API Testing")
 @SuppressWarnings({
   "PMD.JUnitTestsShouldIncludeAssert",
@@ -33,8 +33,8 @@ class RestAssuredIT {
 
   @Container
   static final GenericContainer<?> HTTPBIN =
-      new GenericContainer<>(DockerImageName.parse("kennethreitz/httpbin:latest"))
-          .withExposedPorts(80)
+      new GenericContainer<>(DockerImageName.parse("mccutchen/go-httpbin:2.18.1"))
+          .withExposedPorts(8080)
           .waitingFor(Wait.forHttp("/get").forStatusCode(200));
 
   @BeforeAll

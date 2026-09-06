@@ -45,7 +45,11 @@ public final class SparkEtlExample {
    * @return list of (word, count) tuples
    */
   public static List<scala.Tuple2<String, Integer>> wordCountRdd(List<String> lines) {
-    SparkConf conf = new SparkConf().setAppName("WordCount-RDD").setMaster("local[*]");
+    SparkConf conf =
+        new SparkConf()
+            .setAppName("WordCount-RDD")
+            .setMaster("local[*]")
+            .set("spark.ui.enabled", "false");
 
     try (JavaSparkContext sc = new JavaSparkContext(conf)) {
       JavaRDD<String> rdd = sc.parallelize(lines);
@@ -65,32 +69,26 @@ public final class SparkEtlExample {
    * <p>Demonstrates reading CSV, transforming with SQL expressions, and writing output. The
    * DataFrame API provides schema enforcement, catalyst optimization, and SQL interop.
    *
+   * @param spark caller-owned session that must remain open while the returned dataset is used
    * @param inputPath path to the input CSV file
    * @param outputPath path for Parquet output, or {@code null} to skip writing
-   * @return transformed and aggregated dataset
+   * @return transformed and aggregated dataset bound to {@code spark}
    */
-  public static Dataset<Row> csvTransformExample(String inputPath, String outputPath) {
-    try (SparkSession spark =
-        SparkSession.builder().appName("CSV-ETL").master("local[*]").getOrCreate()) {
+  public static Dataset<Row> csvTransformExample(
+      SparkSession spark, String inputPath, String outputPath) {
+    Dataset<Row> raw =
+        spark.read().option("header", "true").option("inferSchema", "true").csv(inputPath);
 
-      // Extract: read CSV with inferred schema
-      Dataset<Row> raw =
-          spark.read().option("header", "true").option("inferSchema", "true").csv(inputPath);
+    Dataset<Row> transformed =
+        raw.filter(col("amount").gt(0))
+            .withColumn("amount_usd", col("amount").multiply(col("exchange_rate")))
+            .groupBy("category")
+            .agg(sum("amount_usd").alias("total_usd"), count("*").alias("transaction_count"));
 
-      // Transform: filter, derive columns, aggregate
-      Dataset<Row> transformed =
-          raw.filter(col("amount").gt(0))
-              .withColumn("amount_usd", col("amount").multiply(col("exchange_rate")))
-              .groupBy("category")
-              .agg(sum("amount_usd").alias("total_usd"), count("*").alias("transaction_count"));
-
-      // Load: write as Parquet (columnar, compressed)
-      if (outputPath != null) {
-        transformed.write().mode("overwrite").parquet(outputPath);
-      }
-
-      return transformed;
+    if (outputPath != null) {
+      transformed.write().mode("overwrite").parquet(outputPath);
     }
+    return transformed;
   }
 
   /**

@@ -8,7 +8,8 @@ AssertJ fluent assertions, `assertAll` grouping, exception assertions
 (`assertThatThrownBy`, typed shortcuts), parameterized tests (`@ValueSource`,
 `@CsvSource`, `@MethodSource` returning `Stream<Arguments>`), `@Nested` state
 grouping, `assertTimeout(Duration)`, conditional execution (`@EnabledOnOs`), and
-`@Tag` filtering (`mvn test -Dgroups=slow`).
+`@Tag` filtering (`./mvnw test -Dgroups=slow`). The `@Tag("slow")` example uses
+`Assumptions.abort` rather than a dummy `assertThat(true)`.
 
 - Add new JUnit 5 feature demos HERE, as a new `@Nested` group, with a `@DisplayName`
   that names the feature.

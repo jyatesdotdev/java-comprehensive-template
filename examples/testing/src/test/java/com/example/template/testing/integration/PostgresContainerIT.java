@@ -19,11 +19,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * <p>Naming convention: *IT.java — picked up by maven-failsafe-plugin, skipped by surefire (unit
  * tests). Run with:
  *
- * <pre>mvn verify -pl examples/testing -P integration-tests</pre>
+ * <pre>{@code ./mvnw verify -pl examples/testing -Pintegration-tests}</pre>
  *
  * <p>Requires Docker to be running.
  */
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @DisplayName("TestContainers PostgreSQL Integration")
 class PostgresContainerIT {
 

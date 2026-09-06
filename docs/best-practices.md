@@ -1,4 +1,4 @@
-# Java Best Practices Guide (Java 17+)
+# Java Best Practices Guide (Java 21)
 
 This guide covers code style, naming conventions, error handling, logging, and general best practices for modern Java development.
 
@@ -26,8 +26,8 @@ This guide covers code style, naming conventions, error handling, logging, and g
 Use a consistent formatter across the team. This project uses [Spotless](https://github.com/diffplug/spotless) with Google Java Format:
 
 ```bash
-mvn spotless:apply   # auto-format all sources
-mvn spotless:check   # CI gate — fails on unformatted code
+./mvnw spotless:apply -Pformat   # auto-format all sources
+./mvnw spotless:check            # CI gate — fails on unformatted code
 ```
 
 Key rules:

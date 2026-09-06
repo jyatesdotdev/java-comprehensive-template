@@ -1,6 +1,6 @@
 # High Performance Computing
 
-Parallel streams, CompletableFuture, virtual threads, and concurrent collections for Java 17+ (virtual threads require Java 21+).
+Parallel streams, CompletableFuture, virtual threads, and concurrent collections for Java 21.
 
 ## Contents
 
@@ -41,14 +41,14 @@ Parallel streams, CompletableFuture, virtual threads, and concurrent collections
 ## How to Run
 
 ```bash
-# From project root — compile (excludes VirtualThreadExamples on Java 17)
+# From project root (Java 21 — VirtualThreadExamples compiles on the default toolchain)
 ./mvnw -pl examples/hpc compile
 
 # Run tests
 ./mvnw -pl examples/hpc test
 
-# To include virtual threads (requires Java 21+):
-# Update root pom.xml: <java.version>21</java.version>
+# Optional: compiling this module with JDK 17 activates the `java17` overlay,
+# which excludes VirtualThreadExamples.java. The root POM is already Java 21.
 ```
 
 ## Performance Tips

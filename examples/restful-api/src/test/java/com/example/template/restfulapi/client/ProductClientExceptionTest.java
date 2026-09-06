@@ -16,8 +16,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,23 +27,27 @@ import reactor.core.publisher.Mono;
 class ProductClientExceptionTest {
 
   private static final UUID TEST_ID = UUID.randomUUID();
+  private static final String BASE_URL = "http://localhost";
 
   @Test
   void jaxRsGetShouldThrowResourceNotFoundExceptionOn404() {
-    Client jaxRsClient = mockJaxRsClient(404);
-    ProductJaxRsClient client = new ProductJaxRsClient("http://localhost");
-    ReflectionTestUtils.setField(client, "client", jaxRsClient);
+    ProductJaxRsClient client = new ProductJaxRsClient(BASE_URL, mockJaxRsClient(404));
 
     assertThatThrownBy(() -> client.get(TEST_ID)).isInstanceOf(ResourceNotFoundException.class);
   }
 
   @Test
   void jaxRsDeleteShouldThrowClientExceptionOnFailure() {
-    Client jaxRsClient = mockJaxRsClient(500);
-    ProductJaxRsClient client = new ProductJaxRsClient("http://localhost");
-    ReflectionTestUtils.setField(client, "client", jaxRsClient);
+    ProductJaxRsClient client = new ProductJaxRsClient(BASE_URL, mockJaxRsClient(500));
 
     assertThatThrownBy(() -> client.delete(TEST_ID)).isInstanceOf(ClientException.class);
+  }
+
+  @Test
+  void jaxRsListShouldThrowClientExceptionOnFailure() {
+    ProductJaxRsClient client = new ProductJaxRsClient(BASE_URL, mockJaxRsClient(503));
+
+    assertThatThrownBy(client::list).isInstanceOf(ClientException.class);
   }
 
   @Test
@@ -66,8 +70,8 @@ class ProductClientExceptionTest {
               return mockResponseSpec;
             });
 
-    ProductRestTemplateClient client = new ProductRestTemplateClient("http://localhost");
-    ReflectionTestUtils.setField(client, "restClient", mockRestClient);
+    ProductRestTemplateClient client =
+        new ProductRestTemplateClient(BASE_URL, new RestTemplate(), mockRestClient);
 
     assertThatThrownBy(() -> client.getWithRestClient(TEST_ID))
         .isInstanceOf(ResourceNotFoundException.class);
@@ -78,12 +82,20 @@ class ProductClientExceptionTest {
     ExchangeFunction exchangeFunction =
         request -> Mono.just(ClientResponse.create(HttpStatus.NOT_FOUND).build());
     WebClient webClient = WebClient.builder().exchangeFunction(exchangeFunction).build();
-
-    ProductWebClientExample client = new ProductWebClientExample("http://localhost");
-    ReflectionTestUtils.setField(client, "webClient", webClient);
+    ProductWebClientExample client = new ProductWebClientExample(webClient);
 
     assertThatThrownBy(() -> client.getReactive(TEST_ID).block())
         .isInstanceOf(ResourceNotFoundException.class);
+  }
+
+  @Test
+  void webClientListReactiveShouldErrorWithClientExceptionOn500() {
+    ExchangeFunction exchangeFunction =
+        request -> Mono.just(ClientResponse.create(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    WebClient webClient = WebClient.builder().exchangeFunction(exchangeFunction).build();
+    ProductWebClientExample client = new ProductWebClientExample(webClient);
+
+    assertThatThrownBy(() -> client.listReactive().block()).isInstanceOf(ClientException.class);
   }
 
   private Client mockJaxRsClient(int statusCode) {

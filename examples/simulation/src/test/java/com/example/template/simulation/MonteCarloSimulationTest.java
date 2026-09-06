@@ -80,8 +80,7 @@ class MonteCarloSimulationTest {
   void welfordMatchesHandComputedSample() {
     // Sample: 2, 4, 4, 4, 5, 5, 7, 9 -> mean = 5, sum of squared deviations = 32,
     // sample variance = 32 / 7, sample stddev = sqrt(32 / 7) ~= 2.13809.
-    // The supplier cycles, so the engine's second min/max pass (8 more draws)
-    // sees the same 8 values again: min = 2, max = 9.
+    // Min/max come from the same eight trials, not a second stream of draws.
     DoubleSupplier supplier = cycling(2, 4, 4, 4, 5, 5, 7, 9);
 
     Result result = MonteCarloSimulation.run(8, false, supplier);

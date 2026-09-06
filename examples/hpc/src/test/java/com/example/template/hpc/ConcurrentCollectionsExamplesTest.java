@@ -24,6 +24,12 @@ import org.junit.jupiter.api.Timeout;
 @DisplayName("ConcurrentCollectionsExamples")
 class ConcurrentCollectionsExamplesTest {
 
+  private static final String ONE = "one";
+  private static final String TWO = "two";
+  private static final String THREE = "three";
+  private static final String FOUR = "four";
+  private static final String FIVE = "five";
+
   @Test
   @DisplayName("wordCount counts each word's occurrences")
   void wordCountCountsOccurrences() {
@@ -48,16 +54,16 @@ class ConcurrentCollectionsExamplesTest {
     map.put("low", 1L);
     map.put("high", 10L);
 
-    assertThat(ConcurrentCollectionsExamples.findHighValue(map, 5L)).isEqualTo("high");
+    assertThat(ConcurrentCollectionsExamples.findHighValue(map, 5L)).contains("high");
   }
 
   @Test
-  @DisplayName("findHighValue returns null when nothing matches")
-  void findHighValueReturnsNullWhenNoMatch() {
+  @DisplayName("findHighValue returns empty when nothing matches")
+  void findHighValueReturnsEmptyWhenNoMatch() {
     var map = new ConcurrentHashMap<String, Long>();
     map.put("low", 1L);
 
-    assertThat(ConcurrentCollectionsExamples.findHighValue(map, 100L)).isNull();
+    assertThat(ConcurrentCollectionsExamples.findHighValue(map, 100L)).isEmpty();
   }
 
   @Test
@@ -65,14 +71,38 @@ class ConcurrentCollectionsExamplesTest {
   @DisplayName("producer/consumer delivers all items in order and stops at the poison pill")
   void producerConsumerDeliversAllItemsInOrder() throws InterruptedException {
     BlockingQueue<String> queue = new ArrayBlockingQueue<>(2);
-    List<String> items = List.of("one", "two", "three", "four", "five");
+    List<String> items = List.of(ONE, TWO, THREE, FOUR, FIVE);
 
     ConcurrentCollectionsExamples.startProducer(queue, items);
     List<String> consumed = ConcurrentCollectionsExamples.consumeAll(queue);
 
-    assertThat(consumed).containsExactly("one", "two", "three", "four", "five");
+    assertThat(consumed).containsExactly(ONE, TWO, THREE, FOUR, FIVE);
     assertThatThrownBy(() -> consumed.add("nope"))
         .isInstanceOf(UnsupportedOperationException.class);
+  }
+
+  @Test
+  @Timeout(5)
+  @DisplayName("interrupted producer still delivers a poison pill so the consumer unblocks")
+  void interruptedProducerStillSignalsConsumer() throws InterruptedException {
+    BlockingQueue<String> queue = new ArrayBlockingQueue<>(1);
+    Thread producer = ConcurrentCollectionsExamples.startProducer(queue, List.of(ONE, TWO, THREE));
+
+    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(2);
+    while (producer.getState() != Thread.State.WAITING
+        && producer.getState() != Thread.State.TIMED_WAITING) {
+      if (System.nanoTime() > deadline) {
+        throw new AssertionError("producer did not block on the full queue");
+      }
+      Thread.onSpinWait();
+    }
+    producer.interrupt();
+
+    List<String> consumed = ConcurrentCollectionsExamples.consumeAll(queue);
+    producer.join(TimeUnit.SECONDS.toMillis(2));
+
+    assertThat(consumed).isSubsetOf(ONE, TWO, THREE);
+    assertThat(producer.isAlive()).isFalse();
   }
 
   @Test

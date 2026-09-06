@@ -48,11 +48,13 @@ and fail the build.
 
 ## Docker note
 
-The **root** `Dockerfile` builds this module (multi-stage: Temurin 21 JDK build →
-layertools extract → JRE Alpine runtime, non-root `app` user, healthcheck on
-`/actuator/health` — actuator *is* a dependency here, so that works). However, CI's
-`container-scan`/`docker` jobs build `examples/restful-api/Dockerfile` instead, so
-changes to the root Dockerfile are **not** exercised by CI. Test locally:
+The **root** `Dockerfile` builds this module (multi-stage: Temurin 21 JDK +
+`apk add unzip` so `./mvnw` can honor `distributionSha256Sum` → Maven 3.9.9 →
+layertools extract → JRE Alpine runtime with `wget`, non-root
+`app` user, healthcheck on `/actuator/health` — actuator *is* a dependency here,
+so that works). However, CI's `container-scan`/`docker` jobs build
+`examples/restful-api/Dockerfile` instead, so changes to the root Dockerfile are
+**not** exercised by CI. Test locally:
 
 ```bash
 ./mvnw -pl app -am package && docker build -t template-app .

@@ -259,6 +259,18 @@ public final class CreationalPatterns {
   public record Notification(String recipient, String subject, String body, List<String> tags) {
 
     /**
+     * Copies {@code tags} so callers cannot alias a mutable list into the record.
+     *
+     * @param recipient message recipient
+     * @param subject message subject
+     * @param body message body
+     * @param tags tags to copy
+     */
+    public Notification {
+      tags = List.copyOf(tags);
+    }
+
+    /**
      * Immutable copy with a different recipient.
      *
      * @param recipient new recipient

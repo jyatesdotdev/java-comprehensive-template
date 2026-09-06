@@ -44,7 +44,7 @@ Run everything from the repository root.
 ./mvnw spotless:apply -Pformat             # auto-format (google-java-format) — run BEFORE quality checks
 ./mvnw verify -Psecurity-scan-quick -DskipTests   # Checkstyle + PMD + SpotBugs — what CI gates on
 ./mvnw verify -Psecurity-scan              # same + OWASP dependency check (slow; wants -DnvdApiKey=...)
-./mvnw verify -pl examples/testing -P integration-tests   # *IT tests (requires Docker running)
+./mvnw verify -pl examples/testing -Pintegration-tests   # *IT tests (requires Docker running)
 ./mvnw -pl examples/restful-api spring-boot:run    # run the REST example on :8080
 ./mvnw -pl app spring-boot:run             # run the core app on :8080
 ```
@@ -66,8 +66,9 @@ PMD, and SpotBugs only bind to the `verify` phase under `-Psecurity-scan` or
 | JaCoCo | root pom | **80% line coverage**, BUNDLE level — but every `examples/*` module sets `jacoco.skip=true`, so in practice only `app` is gated |
 
 CI (`.github/workflows/ci.yml`): the true gates are the `build` job
-(`clean verify -DskipITs`) and `quality-gates` (`-Psecurity-scan-quick`). The
-integration-test, OWASP, Trivy, and Snyk jobs run with `continue-on-error: true`.
+(`clean verify -DskipITs`), `quality-gates` (`spotless:check` +
+`-Psecurity-scan-quick`), and `integration-tests` (`-Pintegration-tests`).
+OWASP, Trivy, and Snyk jobs run with `continue-on-error: true`.
 
 ## Hard rules (these fail the build)
 
@@ -91,7 +92,7 @@ integration-test, OWASP, Trivy, and Snyk jobs run with `continue-on-error: true`
 
 ## Testing rules
 
-- `*Test.java` = unit tests (Surefire, run by `mvnw test`). `*IT.java` = integration tests (Failsafe, run only with `-P integration-tests`, need Docker for Testcontainers).
+- `*Test.java` = unit tests (Surefire, run by `mvnw test`). `*IT.java` = integration tests (Failsafe, run only with `-Pintegration-tests`, need Docker for Testcontainers).
 - Stack: JUnit 5 + AssertJ (`assertThat...`) + Mockito. Copy the styles demonstrated in `examples/testing/` — it is the reference module for how to test here.
 - Checkstyle/PMD scan test code, but `*Test`/`*IT` files get relaxed rules (method length, complexity, javadoc) via `config/checkstyle/checkstyle-suppressions.xml`.
 

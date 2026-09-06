@@ -15,6 +15,8 @@ The project uses a multi-module layout under `examples/`. Each module has its ow
 ```
 examples/my-module/
 ├── pom.xml
+├── README.md
+├── AGENTS.md
 └── src/
     ├── main/java/com/example/template/mymodule/
     └── test/java/com/example/template/mymodule/
@@ -41,12 +43,20 @@ examples/my-module/
     <name>My Module</name>
     <description>Brief description of what this module demonstrates</description>
 
+    <properties>
+        <jacoco.skip>true</jacoco.skip>
+    </properties>
+
     <dependencies>
         <!-- Add module-specific dependencies here.
              Common deps (SLF4J, JUnit, AssertJ, Mockito) are inherited from the parent. -->
     </dependencies>
 </project>
 ```
+
+Also add `README.md` (human walkthrough) and `AGENTS.md` (local agent rules; pointer up
+to `examples/AGENTS.md`). Register a row in `examples/AGENTS.md` and the root `README.md`
+module tables.
 
 ### 3. Register in the root `pom.xml`
 

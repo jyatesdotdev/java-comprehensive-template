@@ -14,5 +14,6 @@ Read `examples/etl/AGENTS.md` for module context.
   `record`s (`InputRecord`/`OutputRecord`).
 - There is no runner here: `spring.batch.job.enabled: false` and no
   `@SpringBootApplication` — launching requires a host app injecting `JobLauncher`.
+  Do **not** add `@EnableBatchProcessing` on Boot 3.3 (it disables auto-config).
 - Tests instantiate the config class **directly** (no Spring context) and drive the
   reader/processor by hand — see `CsvToJsonBatchConfigTest`; extend it for new steps.

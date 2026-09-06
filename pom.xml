@@ -31,15 +31,11 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- Spring Boot -->
+        <!-- Spring Boot BOM pins Hibernate, Flyway, HikariCP, H2, PostgreSQL,
+             Jackson, SLF4J, Logback, JUnit, Mockito, and AssertJ. Do not add
+             unused *.version properties for those — bumping them would not
+             change the resolved artifacts. -->
         <spring-boot.version>3.3.5</spring-boot.version>
-
-        <!-- Database -->
-        <hibernate.version>6.4.4.Final</hibernate.version>
-        <flyway.version>10.10.0</flyway.version>
-        <hikaricp.version>5.1.0</hikaricp.version>
-        <h2.version>2.2.224</h2.version>
-        <postgresql.version>42.7.3</postgresql.version>
 
         <!-- Apache -->
         <spark.version>3.5.1</spark.version>
@@ -50,19 +46,16 @@
         <!-- Google -->
         <guava.version>33.1.0-jre</guava.version>
 
-        <!-- Serialization -->
-        <jackson.version>2.17.0</jackson.version>
+        <!-- Serialization / mapping (not in Boot BOM, or override) -->
         <mapstruct.version>1.5.5.Final</mapstruct.version>
 
-        <!-- Logging -->
-        <slf4j.version>2.0.12</slf4j.version>
-        <logback.version>1.5.3</logback.version>
+        <!-- JAX-RS / OpenAPI / JMH (example modules; not in Boot BOM) -->
+        <jersey.version>3.1.5</jersey.version>
+        <springdoc.version>2.5.0</springdoc.version>
+        <jmh.version>1.37</jmh.version>
 
-        <!-- Testing -->
-        <junit-jupiter.version>5.10.2</junit-jupiter.version>
-        <mockito.version>5.23.0</mockito.version>
+        <!-- Testing (overrides / extras; JUnit/Mockito/AssertJ come from Boot BOM) -->
         <byte-buddy.version>1.17.7</byte-buddy.version>
-        <assertj.version>3.25.3</assertj.version>
         <testcontainers.version>1.19.7</testcontainers.version>
         <rest-assured.version>5.4.0</rest-assured.version>
         <archunit.version>1.2.1</archunit.version>
@@ -70,7 +63,10 @@
         <!-- Plugins -->
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+        <!-- -Dsurefire.skip=true skips unit tests only; Failsafe still runs. -->
+        <surefire.skip>false</surefire.skip>
         <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
         <spotless-plugin.version>2.43.0</spotless-plugin.version>
         <spotbugs-plugin.version>4.9.8.3</spotbugs-plugin.version>
@@ -160,6 +156,42 @@
                 <version>${archunit.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <!-- Jersey JAX-RS client (restful-api example) -->
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+
+            <!-- OpenAPI / Swagger UI (restful-api example) -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+
+            <!-- JMH (systems example) -->
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>${jmh.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>${jmh.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -203,6 +235,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <skipTests>${surefire.skip}</skipTests>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -340,6 +375,30 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-java-maven</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <phase>validate</phase>
+                            <configuration>
+                                <rules>
+                                    <requireJavaVersion>
+                                        <version>[21,)</version>
+                                    </requireJavaVersion>
+                                    <requireMavenVersion>
+                                        <version>[3.9.0,)</version>
+                                    </requireMavenVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
                     <version>${owasp-dependency-check.version}</version>
@@ -381,6 +440,10 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

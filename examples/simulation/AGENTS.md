@@ -13,11 +13,11 @@ class with a `main` demo.
 ## Rules this module encodes
 
 - **`ThreadLocalRandom` for anything that may run parallel** — never share a `Random`
-  across threads. (SpotBugs' `PREDICTABLE_RANDOM` is suppressed repo-wide for example
-  code; that's acceptable for simulations, but use `SecureRandom` if you ever write
-  security-relevant randomness.)
-- Statistics in one pass: extend the Welford accumulator pattern rather than buffering
-  all samples (the engine caps its secondary min/max pass at 10,000 samples on purpose).
+  across threads. SpotBugs `PREDICTABLE_RANDOM` is excluded only for `simulation` and
+  `hpc` (`config/spotbugs/spotbugs-exclude.xml`); use `SecureRandom` for anything
+  security-relevant.
+- Statistics in one pass: extend the Welford accumulator (mean, variance, min, max)
+  rather than buffering all samples or drawing a second stream.
 - Results are immutable records; engines validate inputs (`schedule` throws
   `IllegalArgumentException` for past times).
 - `System.out` demo output is **allowed here** (Checkstyle suppression for
@@ -47,9 +47,8 @@ anywhere in the repo) — fine for demos, declare it if you need reproducibility
   via a cycling supplier; `DiscreteEventSimulationTest` is fully deterministic. Match
   those styles — with `ThreadLocalRandom` there is no seeding, so any statistical
   assertion must carry a generous, justified tolerance.
-- Engine quirks to know: `MonteCarloSimulation.run` draws min/max from a *separate*
-  re-sample of up to 10,000 trials (a stateful supplier gets extra invocations), and
-  `trials < 1` is unguarded; equal-time events have unspecified ordering.
+- Engine quirks to know: `trials < 1` is unguarded; equal-time events have unspecified
+  ordering. Min/max are part of the same Welford pass as mean/variance.
 - `DiscreteEventSimulation` carries a broad justified suppression list
   ("Simulation example code") — keep new suppressions equally narrow and commented.
 - No dependencies beyond the parent; keep it JDK-only. `jacoco.skip=true`.

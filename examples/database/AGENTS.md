@@ -53,7 +53,7 @@ resources/db/migration/  V1__create_orders.sql (Flyway)
 
 ```bash
 ./mvnw -pl examples/database spring-boot:run    # H2, Flyway migrates on boot
-./mvnw -pl examples/database test               # 47 tests: entities, service, @DataJpaTest, @JdbcTest
+./mvnw -pl examples/database test               # 39 tests: entities, service, @DataJpaTest, @JdbcTest
 ```
 
 ## Gotchas
@@ -64,7 +64,7 @@ resources/db/migration/  V1__create_orders.sql (Flyway)
   `Optional<Order>`) or stay inside a `@Transactional` method.
 - `DataSourceConfig` is `@Primary` and replaces Boot's auto-configured pool; the
   `spring.datasource.hikari.*` yml block binds to it via `@ConfigurationProperties`.
-- Tests (47) run on embedded H2 with the real Flyway migration — no Docker needed:
+- Tests (39) run on embedded H2 with the real Flyway migration — no Docker needed:
   `OrderTest`/`OrderItemTest`/`OrderStatusTest` (entities), `OrderServiceTest`
   (Mockito), `OrderRepositoryTest` (`@DataJpaTest`), `JdbcOrderDaoTest` (`@JdbcTest` +
   `@Import`). Extend the matching class when you touch a layer; for real-Postgres

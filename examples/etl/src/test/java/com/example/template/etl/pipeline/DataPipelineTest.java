@@ -127,6 +127,18 @@ class DataPipelineTest {
   }
 
   @Test
+  void load_storesACopySoLaterBatchesDoNotAlias() {
+    List<Collection<String>> stored = new ArrayList<>();
+
+    int total = DataPipeline.of(List.of("a", "b", "c", "d")).load(batch -> stored.add(batch), 2);
+
+    assertThat(total).isEqualTo(4);
+    assertThat(stored).hasSize(2);
+    assertThat(stored.get(0)).containsExactly("a", "b");
+    assertThat(stored.get(1)).containsExactly("c", "d");
+  }
+
+  @Test
   void load_rejectsNonPositiveBatchSize() {
     DataPipeline<Integer> pipeline = DataPipeline.of(List.of(1, 2, 3));
 

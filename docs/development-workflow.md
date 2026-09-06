@@ -62,40 +62,52 @@ EOF
 
 ## 3. CI/CD Pipeline
 
-The GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push to `main`/`develop` and on pull requests.
+The GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push to `main`/`develop` and on pull requests targeting those branches.
 
 ### Pipeline Stages
 
 ```
-push/PR
+push/PR to main or develop
   │
-  ├─► build          ── compile + unit tests
+  ├─► build          ── compile + unit tests + app JaCoCo 80%
   │     │
-  │     ├─► integration-tests  ── TestContainers, DB tests
-  │     │
-  │     └─► quality-gates      ── SpotBugs, Checkstyle, JaCoCo
-  │              │
-  │              └─► docker    ── build image (main branch only)
+  │     ├─► integration-tests  ── Failsafe / Testcontainers (gating)
+  │     ├─► quality-gates      ── Spotless + SpotBugs + Checkstyle + PMD
+  │     ├─► dependency-scan    ── OWASP (advisory)
+  │     ├─► container-scan     ── Trivy (advisory)
+  │     └─► snyk-scan          ── Snyk (advisory)
+  │
+  └─► docker (main only) ── restful-api image after quality-gates + ITs + scans
 ```
 
 | Stage | Trigger | What It Does |
 |-------|---------|-------------|
-| `build` | All pushes/PRs | Compile, unit tests via Surefire |
-| `integration-tests` | After build | Integration tests via Failsafe (Docker required) |
-| `quality-gates` | After build | Static analysis + coverage checks |
+| `build` | All pushes/PRs | Compile, unit tests via Surefire, JaCoCo on `app` |
+| `integration-tests` | After build | Failsafe ITs (`-Pintegration-tests`; Docker required) |
+| `quality-gates` | After build | `spotless:check` + `-Psecurity-scan-quick` |
+| `dependency-scan` / `container-scan` / `snyk-scan` | After build | Advisory scanners (`continue-on-error`) |
 | `docker` | Main branch only | Build container image for REST API |
 
 ### Running Locally
 
 ```bash
-# Full CI equivalent
-./mvnw clean verify
+# Full CI equivalent (unit tests + quality gates; no Docker ITs)
+./mvnw clean verify -DskipITs
+./mvnw spotless:check
+./mvnw verify -Psecurity-scan-quick -DskipTests
+
+# Unit-test CI equivalent only (no Docker, no static analysis)
+./mvnw clean verify -DskipITs
+
+# Quality gates equivalent
+./mvnw spotless:check
+./mvnw verify -Psecurity-scan-quick -DskipTests
 
 # Unit tests only (fast)
 ./mvnw test
 
-# Integration tests only
-./mvnw verify -DskipUTs
+# Integration tests only (Docker required)
+./mvnw verify -pl examples/testing -Pintegration-tests -Dsurefire.skip=true
 
 # Single module
 ./mvnw -pl examples/restful-api test
@@ -115,10 +127,10 @@ Add to root `pom.xml` `<build><plugins>`:
 <plugin>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-maven-plugin</artifactId>
-    <version>4.8.4.0</version>
+    <version>${spotbugs-plugin.version}</version> <!-- 4.9.8.3 in the root POM -->
     <configuration>
         <effort>Max</effort>
-        <threshold>Medium</threshold>
+        <threshold>Low</threshold>
         <failOnError>true</failOnError>
     </configuration>
 </plugin>
@@ -228,7 +240,10 @@ docker run -p 8080:8080 java-template-api:latest
 - `-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0` — container-aware memory
 - Health check via Spring Actuator
 
-### Docker Compose (for full stack)
+### Docker Compose sample (not in the repo)
+
+The following is a **copy-paste sample** for a local API + Postgres stack. There is no
+`docker-compose.yml` in this repository; CI builds `examples/restful-api/Dockerfile` only.
 
 ```yaml
 services:
@@ -323,7 +338,7 @@ git push origin main --tags
 | Full build | `./mvnw clean verify` |
 | Unit tests only | `./mvnw test` |
 | Single module | `./mvnw -pl examples/<module> test` |
-| Integration tests | `./mvnw verify -DskipUTs` |
+| Integration tests | `./mvnw verify -pl examples/testing -Pintegration-tests` |
 | Static analysis | `./mvnw spotbugs:check checkstyle:check` |
 | Coverage report | `./mvnw verify jacoco:report` |
 | Dependency scan | `./mvnw dependency-check:check` |

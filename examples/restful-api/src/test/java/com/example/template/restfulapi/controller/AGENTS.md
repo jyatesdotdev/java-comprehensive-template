@@ -5,3 +5,4 @@ Rules: `../AGENTS.md` (module test guide) and the main-side
 `@MockBean ProductService` — slice tests, no full context. Every endpoint covers:
 happy path, validation 400 (assert field-level `details`), 404 via the advice
 (assert `ErrorResponse` shape), and correct status/headers (201 + `Location`, 204).
+Bad UUID and malformed JSON must be 400, not 500.

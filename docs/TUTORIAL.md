@@ -94,24 +94,23 @@ Open Swagger UI in your browser: [http://localhost:8080/swagger-ui.html](http://
 With the server running (from step 3), open a new terminal:
 
 ```bash
-# Create a product
-curl -s -X POST http://localhost:8080/api/v1/products \
+# Create a product (the response `id` is a UUID, not an integer)
+ID=$(curl -s -X POST http://localhost:8080/api/v1/products \
   -H 'Content-Type: application/json' \
-  -d '{"name": "Widget", "price": 9.99}' | jq .
+  -d '{"name": "Widget", "price": 9.99}' | jq -r .id)
+echo "created $ID"
 
 # List all products
 curl -s http://localhost:8080/api/v1/products | jq .
 
-# Get a specific product (use the ID from the create response)
-curl -s http://localhost:8080/api/v1/products/1 | jq .
+# Get / update / delete using that UUID
+curl -s http://localhost:8080/api/v1/products/$ID | jq .
 
-# Update a product
-curl -s -X PUT http://localhost:8080/api/v1/products/1 \
+curl -s -X PUT http://localhost:8080/api/v1/products/$ID \
   -H 'Content-Type: application/json' \
   -d '{"name": "Super Widget", "price": 19.99}' | jq .
 
-# Delete a product
-curl -s -X DELETE http://localhost:8080/api/v1/products/1
+curl -s -X DELETE http://localhost:8080/api/v1/products/$ID
 ```
 
 Stop the server with `Ctrl+C` when done.
@@ -142,7 +141,7 @@ Most modules are libraries, not servers. Run their tests to see them in action:
 For integration tests (requires Docker running):
 
 ```bash
-./mvnw -pl examples/testing verify -P integration-tests
+./mvnw -pl examples/testing verify -Pintegration-tests
 ```
 
 Each module has its own README with details — see [examples/](../examples/).
@@ -242,8 +241,8 @@ This checks all dependencies against the National Vulnerability Database. First 
 ### Code formatting
 
 ```bash
-# Check formatting
-./mvnw spotless:check -Pformat
+# Check formatting (what CI runs)
+./mvnw spotless:check
 
 # Auto-fix formatting
 ./mvnw spotless:apply -Pformat
@@ -254,7 +253,7 @@ This checks all dependencies against the National Vulnerability Database. First 
 After `./mvnw verify`, open the JaCoCo report:
 
 ```bash
-open examples/restful-api/target/site/jacoco/index.html
+open app/target/site/jacoco/index.html
 ```
 
 For detailed scan configuration and suppression guides, see [Security Scanning](SECURITY_SCANNING.md) and [Toolchain — Quality Tools](TOOLCHAIN.md#quality-tools).

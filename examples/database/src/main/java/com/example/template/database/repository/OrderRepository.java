@@ -3,6 +3,7 @@ package com.example.template.database.repository;
 import com.example.template.database.entity.Order;
 import com.example.template.database.entity.OrderStatus;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -79,12 +80,35 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   /**
    * Updates all orders from one status to another in a single statement.
    *
+   * <p>Sets {@code updatedAt} in the query because bulk JPQL bypasses {@code @PreUpdate}. {@code
+   * clearAutomatically} and {@code flushAutomatically} keep the persistence context aligned with
+   * the database. Pass an {@link Instant} (Hibernate 6 will not assign {@code CURRENT_TIMESTAMP} to
+   * {@code Instant}).
+   *
    * @param oldStatus the current status to match
    * @param newStatus the new status to set
    * @return the number of rows updated
    */
-  @Modifying
-  @Query("UPDATE Order o SET o.status = :newStatus WHERE o.status = :oldStatus")
+  default int bulkUpdateStatus(OrderStatus oldStatus, OrderStatus newStatus) {
+    return bulkUpdateStatus(oldStatus, newStatus, Instant.now());
+  }
+
+  /**
+   * Bulk-updates status and {@code updatedAt} in one statement.
+   *
+   * @param oldStatus the current status to match
+   * @param newStatus the new status to set
+   * @param updatedAt timestamp written to matching rows
+   * @return the number of rows updated
+   */
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Query(
+      """
+      UPDATE Order o SET o.status = :newStatus, o.updatedAt = :updatedAt
+      WHERE o.status = :oldStatus
+      """)
   int bulkUpdateStatus(
-      @Param("oldStatus") OrderStatus oldStatus, @Param("newStatus") OrderStatus newStatus);
+      @Param("oldStatus") OrderStatus oldStatus,
+      @Param("newStatus") OrderStatus newStatus,
+      @Param("updatedAt") Instant updatedAt);
 }

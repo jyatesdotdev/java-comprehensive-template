@@ -25,10 +25,9 @@
     </dependencies>
 
     <!--
-        NOTE: VirtualThreadExamples.java requires Java 21+.
-        To compile it, either:
-        1. Update the root POM java.version to 21, or
-        2. Exclude it from compilation on Java 17 using the profile below.
+        Optional overlay: when this module is compiled with JDK 17 (activation
+        range [17,21)), exclude VirtualThreadExamples.java. The root POM is
+        already Java 21, so this profile is inactive on the default toolchain.
     -->
     <profiles>
         <profile>

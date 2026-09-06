@@ -8,8 +8,8 @@ Read `examples/database/AGENTS.md` for the persistence patterns.
   (possibly empty) `List<T>`.
 - Fetching associations eagerly = `LEFT JOIN FETCH` in a dedicated method
   (`findByIdWithItems`) — LEFT, so parent rows without children still return.
-- Bulk writes use `@Modifying @Query` and return the affected row count; remember the
-  persistence context is stale afterwards (tests clear it before re-reading).
+- Bulk writes use `@Modifying(clearAutomatically = true, flushAutomatically = true)`
+  and set `updatedAt` in the JPQL (bulk updates skip `@PreUpdate`).
 - No business logic here — conditions and orchestration belong in `service`.
 - Every query method gets a `@DataJpaTest` case in `src/test/.../repository/` running
   against H2 + the real Flyway migration.
