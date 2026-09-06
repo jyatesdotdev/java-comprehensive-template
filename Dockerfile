@@ -3,7 +3,8 @@ FROM eclipse-temurin:21-jdk-alpine AS build
 
 # unzip is required so mvnw keeps the .zip URL and can honor distributionSha256Sum
 # (without unzip, the wrapper switches to .tar.gz but still checks the zip checksum).
-RUN apk add --no-cache unzip
+RUN apk upgrade --no-cache \
+    && apk add --no-cache unzip
 
 WORKDIR /workspace
 
@@ -45,7 +46,8 @@ LABEL maintainer="team@example.com" \
       org.opencontainers.image.description="Spring Boot application" \
       org.opencontainers.image.source="https://github.com/example/java-enterprise-template"
 
-RUN apk add --no-cache wget \
+RUN apk upgrade --no-cache \
+    && apk add --no-cache wget \
     && addgroup -S app && adduser -S app -G app
 WORKDIR /app
 

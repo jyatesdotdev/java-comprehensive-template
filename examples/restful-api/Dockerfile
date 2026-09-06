@@ -1,6 +1,7 @@
 FROM eclipse-temurin:21-jre-alpine AS runtime
 
-RUN apk add --no-cache wget \
+RUN apk upgrade --no-cache \
+    && apk add --no-cache wget \
     && addgroup -S app && adduser -S app -G app
 
 WORKDIR /app
