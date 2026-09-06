@@ -44,7 +44,7 @@
         <commons-collections4.version>4.4</commons-collections4.version>
 
         <!-- Google -->
-        <guava.version>33.1.0-jre</guava.version>
+        <guava.version>33.7.1-jre</guava.version>
 
         <!-- Serialization / mapping (not in Boot BOM, or override) -->
         <mapstruct.version>1.5.5.Final</mapstruct.version>
