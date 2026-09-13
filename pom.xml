@@ -56,7 +56,7 @@
 
         <!-- Testing (overrides / extras; JUnit/Mockito/AssertJ come from Boot BOM) -->
         <byte-buddy.version>1.17.7</byte-buddy.version>
-        <testcontainers.version>1.19.7</testcontainers.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
         <rest-assured.version>5.4.0</rest-assured.version>
         <archunit.version>1.2.1</archunit.version>
 
